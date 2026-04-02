@@ -1,23 +1,66 @@
 <template>
-  <div class="sidebar hidden lg:flex w-[16.7vw] bg-[#09090b] h-screen flex-col items-center overflow-y-auto custom-scrollbar">
-    <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99] pt-4">
-      Endpoints
+  <div>
+    <!-- Mobile Header Toggle -->
+    <div class="lg:hidden flex items-center justify-between bg-[#09090b] p-4 sticky top-0 z-40">
+      <a href="#" class="cursor-pointer flex items-center gap-2">
+        <span class="font-bold text-white text-xl">Subway Surfers API</span>
+      </a>
+      <button
+        id="mobileSidebarToggle"
+        class="text-white text-2xl"
+        role="button"
+        aria-label="Toggle sidebar"
+        @click="toggleSidebar">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
-    <p v-if="appStore.tokenExpiry" class="font-poppins mb-2 text-center text-xs text-gray-400">
-      Expires: {{ formatDate(appStore.tokenExpiry) }}
-    </p>
-    <Header />
-    <div class="mt-6 w-full">
+
+    <!-- Mobile Sidebar Overlay -->
+    <div
+      v-if="sidebarOpen"
+      id="overlay"
+      class="fixed inset-0 bg-black bg-opacity-40 z-30 lg:hidden"
+      style="touch-action: pan-y"
+      @click="closeSidebar"></div>
+
+    <!-- Mobile Sidebar -->
+    <div
+      :class="[
+        'fixed top-0 left-0 h-full w-64 bg-[#09090b] z-50',
+        'transform transition-transform duration-200 ease-in-out',
+        'lg:hidden flex flex-col shadow-lg overflow-y-auto custom-scrollbar',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      ]">
+      <div class="text-left font-poppins text-lg mb-5 text-[#ffcc99] p-4">
+        Endpoints
+      </div>
+      <p v-if="appStore.tokenExpiry" class="font-poppins mb-2 text-center text-xs text-gray-400">
+        Expires: {{ formatDate(appStore.tokenExpiry) }}
+      </p>
+      <div class="flex items-center gap-2 mb-2 px-4">
+        <button
+          type="button"
+          class="cursor-pointer hover:bg-[#7760fe] hover:text-white duration-100 p-2 px-6 rounded-[7px] bg-white text-black font-semibold text-sm">
+          <i class="fa fa-upload mr-2"></i>
+          Upload Identity
+        </button>
+        <input
+          type="file"
+          id="identity-file-mobile"
+          accept="*"
+          style="display: none" />
+        <span class="ml-2 text-xs text-gray-300"></span>
+      </div>
       <div class="px-4 mb-4 w-full">
         <input
-          id="endpointSearchDesktop"
+          id="endpointSearch"
           type="text"
           placeholder="Search endpoints..."
           autocomplete="off"
           class="endpointSearch px-3 py-2.5 w-full" />
       </div>
       <div
-        id="endpointList"
+        id="mobileEndpointList"
         class="sidebar-links mb-5 w-full flex justify-center flex-col items-center gap-3">
         <div
           v-for="(endpoint, index) in endpointsStore.endpoints"
@@ -27,7 +70,7 @@
             'px-3 py-2 flex items-start gap-1 flex-col justify-between',
             endpointsStore.selectedEndpointIndex === index ? 'sb-selected' : ''
           ]"
-          @click="selectEndpoint(index)">
+          @click="selectEndpointAndClose(index)">
           <a class="flex font-semibold justify-between font-poppins items-center gap-1">
             {{ endpoint.name }}
           </a>
@@ -38,57 +81,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useEndpointsStore } from '@/stores/endpoints'
 import { useAppStore } from '@/stores/app'
-import Header from './Header.vue'
 
 const endpointsStore = useEndpointsStore()
 const appStore = useAppStore()
 
-const searchInput = ref('')
+const sidebarOpen = ref(false)
 
-const selectEndpoint = (index: number) => {
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+}
+
+const closeSidebar = () => {
+  sidebarOpen.value = false
+}
+
+const selectEndpointAndClose = (index: number) => {
   endpointsStore.selectEndpoint(index)
+  closeSidebar()
 }
 
 const formatDate = (date: Date) => {
   return date.toLocaleString()
 }
-
-// Handle search filtering
-watch(searchInput, (query) => {
-  const links = document.querySelectorAll('#endpointList .sidebar-link')
-  const searchQuery = query.toLowerCase()
-
-  links.forEach((link) => {
-    const text = link.textContent?.toLowerCase() || ''
-    const shouldShow = text.includes(searchQuery)
-    ;(link as HTMLElement).style.display = shouldShow ? '' : 'none'
-  })
-})
-
-// Setup search input listener
-const setupSearch = () => {
-  const searchInputElement = document.getElementById(
-    'endpointSearchDesktop'
-  ) as HTMLInputElement | null
-  if (searchInputElement) {
-    searchInputElement.addEventListener('input', (e) => {
-      searchInput.value = (e.target as HTMLInputElement).value
-    })
-  }
-}
-
-// Call setup on component mount
-setupSearch()
 </script>
 
 <style scoped>
-.sidebar {
-  width: 16.7vw;
-}
-
 .sidebar-link {
   width: 87%;
   text-align: left;

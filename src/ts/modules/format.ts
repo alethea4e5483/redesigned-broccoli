@@ -1,4 +1,4 @@
-import type { Endpoint } from '@types/endpoint'
+import type { Endpoint } from '@/ts/types/endpoint'
 
 export const endpointsList: Endpoint[] = 
 [

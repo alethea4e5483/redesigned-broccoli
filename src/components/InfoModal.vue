@@ -1,9 +1,9 @@
 <template>
   <Transition name="fade">
     <div v-if="isOpen" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4">
-      <div class="bg-slate-900 rounded-lg border border-slate-800 max-w-md w-full max-h-96 overflow-y-auto">
+      <div class="bg-[#121212] rounded-lg border border-[#333] max-w-md w-full max-h-96 overflow-y-auto">
         <!-- Header -->
-        <div class="sticky top-0 bg-slate-950 border-b border-slate-800 p-4 flex items-center justify-between">
+        <div class="sticky top-0 bg-[#0a0a0a] border-b border-[#333] p-4 flex items-center justify-between">
           <h2 class="text-lg font-poppins font-semibold text-white">Settings</h2>
           <button
             @click="closeModal"
@@ -25,11 +25,11 @@
               v-model="localToken"
               type="password"
               placeholder="Paste your JWT token"
-              class="w-full px-3 py-2 rounded bg-slate-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+              class="w-full px-3 py-2 rounded-md bg-[#121212] text-white placeholder-gray-500 border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f] text-sm"
             />
             <button
               @click="saveToken"
-              class="mt-2 w-full px-3 py-1 rounded bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold transition-colors text-sm"
+              class="mt-2 w-full px-3 py-1 rounded-md bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold transition-colors text-sm"
             >
               Save Token
             </button>
@@ -44,11 +44,11 @@
               v-model="localProxy"
               type="text"
               placeholder="http://localhost:3000"
-              class="w-full px-3 py-2 rounded bg-slate-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+              class="w-full px-3 py-2 rounded-md bg-[#121212] text-white placeholder-gray-500 border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f] text-sm"
             />
             <button
               @click="saveProxy"
-              class="mt-2 w-full px-3 py-1 rounded bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold transition-colors text-sm"
+              class="mt-2 w-full px-3 py-1 rounded-md bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold transition-colors text-sm"
             >
               Save Proxy
             </button>
@@ -62,18 +62,18 @@
             <input
               v-model="localDisableLimits"
               type="checkbox"
-              class="w-4 h-4 rounded cursor-pointer"
+              class="w-4 h-4 rounded cursor-pointer accent-[#ffcc99]"
             />
           </div>
           <button
             @click="saveLimits"
-            class="w-full px-3 py-1 rounded bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold transition-colors text-sm"
+            class="w-full px-3 py-1 rounded-md bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold transition-colors text-sm"
           >
             Save Settings
           </button>
 
           <!-- Info -->
-          <div class="pt-4 border-t border-slate-800">
+          <div class="pt-4 border-t border-[#333]">
             <p class="text-xs text-gray-400">
               SubwaySurfers API Web - Vue 3 with Composition API
             </p>

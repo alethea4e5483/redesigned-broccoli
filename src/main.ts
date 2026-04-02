@@ -10,7 +10,7 @@ import '@/ts/lib/NotifyPolyfill'
 import './styles/main.css'
 
 // Import root component
-import App from '@/components/App.vue'
+import App from '@/App.vue'
 
 // Create Vue app
 const app = createApp(App)

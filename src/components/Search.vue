@@ -4,7 +4,7 @@
       v-model="searchQuery"
       type="text"
       placeholder="Search endpoints by name or URL..."
-      class="w-full px-4 py-2 rounded bg-slate-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+      class="w-full px-4 py-2 rounded-md bg-[#121212] text-white placeholder-gray-500 border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f]"
     />
 
     <div v-if="searchQuery && filteredEndpoints.length > 0" class="space-y-2">
@@ -13,10 +13,10 @@
         :key="endpoint.name"
         @click="selectEndpoint(endpoint)"
         :class="[
-          'w-full text-left px-3 py-2 rounded transition-colors duration-200',
+          'w-full text-left px-3 py-2 rounded-md transition-colors duration-200',
           selectedEndpoint?.name === endpoint.name
-            ? 'bg-amber-500 text-slate-950 font-semibold'
-            : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
+            ? 'bg-[#ffcc99] text-black font-semibold'
+            : 'bg-[#121212] text-gray-300 hover:bg-[#222] border border-[#333]'
         ]"
       >
         <div class="font-medium text-sm">{{ endpoint.name }}</div>
