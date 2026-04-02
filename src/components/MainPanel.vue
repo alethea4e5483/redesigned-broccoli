@@ -1,36 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import RequestForm from "./RequestForm.vue";
 import ResponsePanel from "./ResponsePanel.vue";
+import { useMainPanel } from "../composables/useMainPanel";
 
 const props = defineProps<{
   selectedEndpoint: any;
 }>();
 
-const activeTab = ref<"request" | "response">("request");
-const responseValue = ref("Nothing returned yet.");
-const isResponseReady = ref(false);
-
-const onResponse = (val: string) => {
-  responseValue.value = val;
-  isResponseReady.value = true;
-  const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-  if (!isDesktop) {
-    activeTab.value = "response";
-  }
-};
-
-const clearResponse = () => {
-  responseValue.value = "Nothing returned yet.";
-  isResponseReady.value = false;
-};
-
-const setTab = (tab: "request" | "response") => {
-  activeTab.value = tab;
-  if (tab === "response") {
-    isResponseReady.value = false;
-  }
-};
+const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, setTab } = useMainPanel();
 </script>
 
 <template>

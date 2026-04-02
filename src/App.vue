@@ -1,29 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import Sidebar from "./components/Sidebar.vue";
 import MainPanel from "./components/MainPanel.vue";
 import InfoModal from "./components/InfoModal.vue";
+import { useAppNavigation } from "./composables/useAppNavigation";
 
-const showMobileSidebar = ref(false);
-const showInfoModal = ref(false);
-const selectedEndpoint = ref<any>(null);
-
-const toggleMobileSidebar = () => {
-  showMobileSidebar.value = !showMobileSidebar.value;
-};
-
-const selectEndpoint = (ep: any) => {
-  selectedEndpoint.value = ep;
-  showMobileSidebar.value = false;
-};
-
-const openInfo = () => {
-  showInfoModal.value = true;
-};
-
-const closeInfo = () => {
-  showInfoModal.value = false;
-};
+const {
+  showMobileSidebar,
+  showInfoModal,
+  selectedEndpoint,
+  toggleMobileSidebar,
+  selectEndpoint,
+  openInfo,
+  closeInfo,
+} = useAppNavigation();
 </script>
 
 <template>

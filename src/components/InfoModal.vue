@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useAppStore } from "../stores/app";
 import { X, ChevronDown } from "lucide-vue-next";
+import { useInfoModal } from "../composables/useInfoModal";
 
 defineProps<{
   show: boolean;
@@ -11,17 +10,7 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-const store = useAppStore();
-const showSettings = ref(false);
-const corsProxyInput = ref(store.corsProxy);
-
-const saveCorsProxy = () => {
-  store.setCorsProxy(corsProxyInput.value);
-};
-
-const toggleLimits = () => {
-  store.setLimitsDisabled(!store.limitsDisabled);
-};
+const { showSettings, corsProxyInput, saveCorsProxy, toggleLimits } = useInfoModal();
 </script>
 
 <template>

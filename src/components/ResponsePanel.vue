@@ -1,23 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useClipboard } from "../composables/useClipboard";
 
 const props = defineProps<{
   value: string;
 }>();
 
-const copyText = ref("Copy");
+const { copyText, onCopy } = useClipboard();
 
-const onCopy = async () => {
-  try {
-    await navigator.clipboard.writeText(props.value);
-    copyText.value = "Copied";
-    setTimeout(() => {
-      copyText.value = "Copy";
-    }, 1200);
-  } catch (err) {
-    console.error("Failed to copy", err);
-  }
-};
+const handleCopy = () => onCopy(props.value);
 </script>
 
 <template>
@@ -26,7 +16,7 @@ const onCopy = async () => {
       <h3 class="text-[#ffcc99] text-xl font-poppins font-semibold">Result</h3>
       <button
         v-if="value !== 'Nothing returned yet.'"
-        @click="onCopy"
+        @click="handleCopy"
         type="button"
         class="rounded-md border border-[#333] bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#252525] cursor-pointer"
       >
