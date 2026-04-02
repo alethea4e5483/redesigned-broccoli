@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Production
+dist/
+build/
+
+# Vite
+.vite/
+
+# Generated protobuf files
+src/ts/gen/
+**/*.pb.ts
+**/*.pb.es.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
