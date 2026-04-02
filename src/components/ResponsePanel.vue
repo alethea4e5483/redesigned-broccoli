@@ -28,7 +28,7 @@ const onCopy = async () => {
         v-if="value !== 'Nothing returned yet.'"
         @click="onCopy"
         type="button"
-        class="rounded-md border border-[#333] bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#252525]"
+        class="rounded-md border border-[#333] bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#252525] cursor-pointer"
       >
         {{ copyText }}
       </button>

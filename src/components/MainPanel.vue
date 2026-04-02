@@ -47,7 +47,7 @@ const setTab = (tab: "request" | "response") => {
           @click="setTab('request')"
           type="button"
           :class="[
-            'rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
+            'rounded-lg px-3 py-2 text-sm font-semibold transition-colors cursor-pointer',
             activeTab === 'request'
               ? 'bg-[#ffcc99] text-black'
               : 'text-gray-300',
@@ -59,7 +59,7 @@ const setTab = (tab: "request" | "response") => {
           @click="setTab('response')"
           type="button"
           :class="[
-            'relative rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
+            'relative rounded-lg px-3 py-2 text-sm font-semibold transition-colors cursor-pointer',
             activeTab === 'response'
               ? 'bg-[#ffcc99] text-black'
               : 'text-gray-300',

@@ -87,7 +87,7 @@ const closeInfo = () => {
       <button
         @click="openInfo"
         title="Info"
-        class="w-11 h-11 rounded-full flex items-center justify-center bg-[#222] text-white hover:bg-[#444]"
+        class="w-11 h-11 rounded-full flex items-center justify-center bg-[#222] text-white hover:bg-[#444] cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -36,7 +36,7 @@ const toggleLimits = () => {
       <button
         @click="emit('close')"
         type="button"
-        class="rounded-full p-2 inline-flex items-center justify-center text-gray-400 bg-transparent hover:text-white hover:bg-gray-700 transition-colors duration-200 absolute right-2 top-2 text-xl"
+        class="rounded-full p-2 inline-flex items-center justify-center text-gray-400 bg-transparent hover:text-white hover:bg-gray-700 transition-colors duration-200 absolute right-2 top-2 text-xl cursor-pointer"
       >
         <X class="h-6 w-6" />
       </button>
@@ -86,7 +86,7 @@ const toggleLimits = () => {
             <a
               target="_blank"
               href="https://github.com/HerrErde/SubwaySurfers-Api"
-              class="text-blue-400 hover:underline"
+              class="text-blue-400 hover:underline cursor-pointer"
               >github.com/HerrErde/SubwaySurfers-Api</a
             >.
           </p>
@@ -167,7 +167,7 @@ const toggleLimits = () => {
                     />
                     <button
                       @click="saveCorsProxy"
-                      class="absolute top-0 right-0 h-full w-16 rounded-r-md bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-800 transition-colors"
+                      class="absolute top-0 right-0 h-full w-16 rounded-r-md bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-800 transition-colors cursor-pointer"
                     >
                       Save
                     </button>
@@ -186,14 +186,14 @@ const toggleLimits = () => {
           <a
             target="_blank"
             href="https://github.com/HerrErde/SubwaySurfers-Api-web"
-            class="hover:text-white"
+            class="hover:text-white cursor-pointer"
             >Source</a
           >
           ·
           <a
             target="_blank"
             href="https://github.com/HerrErde/SubwaySurfers-Api"
-            class="hover:text-white"
+            class="hover:text-white cursor-pointer"
             >Api-Docs</a
           >
         </section>

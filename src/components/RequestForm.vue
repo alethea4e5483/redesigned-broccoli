@@ -308,7 +308,7 @@ const onAddMetadata = () => {
       <button
         @click="handleAutofill"
         type="button"
-        class="bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold px-3 py-1 rounded-lg text-sm transition-colors"
+        class="bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold px-3 py-1 rounded-lg text-sm transition-colors cursor-pointer"
       >
         Autofill from JSON
       </button>
@@ -334,7 +334,7 @@ const onAddMetadata = () => {
             <button
               @click="onAddMetadata"
               type="button"
-              class="p-2 rounded-md bg-[#1a1a1a] border border-[#333] hover:bg-[#252525]"
+              class="p-2 rounded-md bg-[#1a1a1a] border border-[#333] hover:bg-[#252525] cursor-pointer"
             >
               <Plus class="w-4 h-4" />
             </button>
@@ -353,7 +353,7 @@ const onAddMetadata = () => {
                 <button
                   @click="removeMetadataEntry(entry.key)"
                   type="button"
-                  class="p-1 rounded-md bg-[#1a1a1a] border border-[#333] hover:bg-red-900/20 hover:border-red-900"
+                  class="p-1 rounded-md bg-[#1a1a1a] border border-[#333] hover:bg-red-900/20 hover:border-red-900 cursor-pointer"
                 >
                   <Minus class="w-4 h-4" />
                 </button>
@@ -413,7 +413,7 @@ const onAddMetadata = () => {
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="w-full sm:w-auto bg-[#ffcc99] hover:bg-[#ee9e4f] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+          class="w-full sm:w-auto bg-[#ffcc99] hover:bg-[#ee9e4f] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           <Send v-if="!isSubmitting" class="w-4 h-4" />
           <div
