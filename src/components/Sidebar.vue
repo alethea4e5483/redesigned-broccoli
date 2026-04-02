@@ -1,171 +1,151 @@
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useAppStore } from "../stores/app";
+import { endpointsList } from "../endpoints";
+import { Upload, FileText, Search } from "lucide-vue-next";
+
+const props = defineProps<{
+  selectedEndpoint: any;
+}>();
+
+const emit = defineEmits<{
+  (e: "select-endpoint", endpoint: any): void;
+}>();
+
+const store = useAppStore();
+const searchQuery = ref("");
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const filteredEndpoints = computed(() => {
+  if (!searchQuery.value) return endpointsList;
+  const query = searchQuery.value.toLowerCase();
+  return endpointsList.filter(
+    (ep) =>
+      ep.name.toLowerCase().includes(query) ||
+      ep.endpoint.toLowerCase().includes(query),
+  );
+});
+
+const onFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  if (!file.name.startsWith("identity")) {
+    alert('Please select a file named "identity"');
+    target.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const result = ev.target?.result;
+      if (typeof result !== "string") return;
+
+      const json = JSON.parse(result);
+      if (
+        !json.user?.id ||
+        !json.identityToken?.token ||
+        !json.refreshToken?.token
+      ) {
+        throw new Error("JSON missing required fields");
+      }
+
+      const jwt = json.identityToken.token;
+      let expiryDate: Date | null = null;
+      if (json.identityToken.expiresAt) {
+        expiryDate = new Date(json.identityToken.expiresAt);
+        if (!isNaN(expiryDate.getTime()) && expiryDate < new Date()) {
+          alert("Token has expired");
+          return;
+        }
+      }
+
+      store.setIdentity(jwt, expiryDate);
+    } catch (err) {
+      alert("Invalid identity file");
+      store.clearIdentity();
+      target.value = "";
+    }
+  };
+  reader.readAsText(file);
+};
+
+const triggerUpload = () => {
+  fileInput.value?.click();
+};
+
+const expiryDisplay = computed(() => {
+  if (!store.identityExpiry) return "";
+  return new Date(store.identityExpiry).toLocaleString();
+});
+</script>
+
 <template>
-  <div class="sidebar hidden lg:flex w-[16.7vw] bg-[#09090b] h-screen flex-col items-center overflow-y-auto custom-scrollbar">
-    <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99] pt-4">
+  <div class="flex flex-col items-center w-full p-4">
+    <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99] w-full">
       Endpoints
     </div>
-    <p v-if="appStore.tokenExpiry" class="font-poppins mb-2 text-center text-xs text-gray-400">
-      Expires: {{ formatDate(appStore.tokenExpiry) }}
+
+    <p
+      v-if="store.identityExpiry"
+      class="font-poppins mb-2 text-center text-xs text-gray-400"
+    >
+      Expires:<br />{{ expiryDisplay }}
     </p>
-    <Header />
-    <div class="mt-6 w-full">
-      <div class="px-4 mb-4 w-full">
+
+    <div class="flex items-center gap-2 mb-4 w-full justify-center">
+      <button
+        @click="triggerUpload"
+        type="button"
+        :class="[
+          'cursor-pointer duration-100 p-2 px-6 rounded-[7px] font-semibold text-sm flex items-center gap-2',
+          store.identityToken
+            ? 'bg-[#7760fe] text-white'
+            : 'bg-white text-black hover:bg-[#7760fe] hover:text-white',
+        ]"
+      >
+        <FileText v-if="store.identityToken" class="w-4 h-4" />
+        <Upload v-else class="w-4 h-4" />
+        {{ store.identityToken ? "identity" : "Upload Identity" }}
+      </button>
+      <input
+        ref="fileInput"
+        type="file"
+        accept="*"
+        class="hidden"
+        @change="onFileChange"
+      />
+    </div>
+
+    <div class="w-full px-4 mb-4">
+      <div class="relative">
+        <Search
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
+        />
         <input
-          id="endpointSearchDesktop"
+          v-model="searchQuery"
           type="text"
           placeholder="Search endpoints..."
           autocomplete="off"
-          class="endpointSearch px-3 py-2.5 w-full" />
+          class="w-full pl-10 pr-3 py-2.5 rounded-md bg-[#121212] text-white border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f]"
+        />
       </div>
+    </div>
+
+    <div class="sidebar-links mb-5 w-full flex flex-col items-center gap-3">
       <div
-        id="endpointList"
-        class="sidebar-links mb-5 w-full flex justify-center flex-col items-center gap-3">
-        <div
-          v-for="(endpoint, index) in endpointsStore.endpoints"
-          :key="index"
-          :class="[
-            'sidebar-link rounded-[9px] text-left w-[90%] transition-colors cursor-pointer',
-            'px-3 py-2 flex items-start gap-1 flex-col justify-between',
-            endpointsStore.selectedEndpointIndex === index ? 'sb-selected' : ''
-          ]"
-          @click="selectEndpoint(index)">
-          <a class="flex font-semibold justify-between font-poppins items-center gap-1">
-            {{ endpoint.name }}
-          </a>
-        </div>
+        v-for="ep in filteredEndpoints"
+        :key="ep.endpoint"
+        @click="emit('select-endpoint', ep)"
+        :class="[
+          'sidebar-link rounded-[9px] text-left w-[90%] transition-colors cursor-pointer px-3 py-2 flex flex-col justify-between border border-transparent',
+          props.selectedEndpoint?.endpoint === ep.endpoint ? 'sb-selected' : '',
+        ]"
+      >
+        <span class="font-semibold font-poppins text-sm">{{ ep.name }}</span>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useEndpointsStore } from '@/stores/endpoints'
-import { useAppStore } from '@/stores/app'
-import Header from './Header.vue'
-
-const endpointsStore = useEndpointsStore()
-const appStore = useAppStore()
-
-const searchInput = ref('')
-
-const selectEndpoint = (index: number) => {
-  endpointsStore.selectEndpoint(index)
-}
-
-const formatDate = (date: Date) => {
-  return date.toLocaleString()
-}
-
-// Handle search filtering
-watch(searchInput, (query) => {
-  const links = document.querySelectorAll('#endpointList .sidebar-link')
-  const searchQuery = query.toLowerCase()
-
-  links.forEach((link) => {
-    const text = link.textContent?.toLowerCase() || ''
-    const shouldShow = text.includes(searchQuery)
-    ;(link as HTMLElement).style.display = shouldShow ? '' : 'none'
-  })
-})
-
-// Setup search input listener
-const setupSearch = () => {
-  const searchInputElement = document.getElementById(
-    'endpointSearchDesktop'
-  ) as HTMLInputElement | null
-  if (searchInputElement) {
-    searchInputElement.addEventListener('input', (e) => {
-      searchInput.value = (e.target as HTMLInputElement).value
-    })
-  }
-}
-
-// Call setup on component mount
-setupSearch()
-</script>
-
-<style scoped>
-.sidebar {
-  width: 16.7vw;
-}
-
-.sidebar-link {
-  width: 87%;
-  text-align: left;
-  display: block;
-  margin: auto;
-  padding: 0.65rem 0.7rem;
-  color: #ffffffe8;
-  position: relative;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.sidebar-link a {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-  gap: 5px;
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.05rem;
-}
-
-.sidebar-link:not(.sb-selected):hover {
-  background: #ffffff0d;
-  font-weight: bold;
-}
-
-.sb-selected {
-  background: #ffcc99;
-  color: black;
-  font-weight: bold;
-}
-
-.endpointSearch {
-  flex-shrink: 1;
-  transition-duration: 0.2s;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  border-width: 1px;
-  background-color: #ffffff0d;
-  width: 100%;
-  border-radius: 0.5rem;
-  border: none;
-  color: #fff;
-  font-family: Poppins;
-  padding: 0.625rem 0.75rem;
-}
-
-.endpointSearch:focus {
-  border: none;
-  outline: 2px solid #ffcc99;
-  outline-offset: 2px;
-}
-
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  transition: background 0.3s;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-</style>

@@ -1,91 +1,48 @@
-<template>
-  <div class="hidden lg:flex bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] flex-col h-[calc(100dvh-11rem)] lg:h-auto">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-[#ffcc99] text-xl font-poppins font-semibold">
-        Result
-      </h3>
-      <button
-        v-if="hasResponse"
-        id="copy-response-btn"
-        type="button"
-        class="rounded-md border border-[#333] bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#252525]"
-        @click="copyResponse">
-        {{ copyButtonText }}
-      </button>
-    </div>
-    <textarea
-      id="response-output"
-      v-model="responseContent"
-      rows="40"
-      readonly
-      class="w-full h-full bg-[#121212] text-white border border-[#333] rounded p-2 font-mono text-sm"
-      :style="{ minHeight: '120px', maxHeight: '80vh' }"></textarea>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from "vue";
 
-const responseContent = ref('Nothing returned yet.')
-const copyButtonText = ref('Copy')
+const props = defineProps<{
+  value: string;
+}>();
 
-const hasResponse = computed(() => responseContent.value !== 'Nothing returned yet.')
+const copyText = ref("Copy");
 
-// Expose function for updating response
-const updateResponse = (content: string) => {
-  responseContent.value = content
-}
-
-const copyResponse = async () => {
+const onCopy = async () => {
   try {
-    await navigator.clipboard.writeText(responseContent.value)
-    copyButtonText.value = 'Copied'
+    await navigator.clipboard.writeText(props.value);
+    copyText.value = "Copied";
     setTimeout(() => {
-      copyButtonText.value = 'Copy'
-    }, 1200)
-  } catch {
-    // Fallback for older browsers
-    const textarea = document.getElementById('response-output') as HTMLTextAreaElement
-    if (textarea) {
-      textarea.select()
-      document.execCommand('copy')
-      textarea.setSelectionRange(0, 0)
-    }
-    copyButtonText.value = 'Copied'
-    setTimeout(() => {
-      copyButtonText.value = 'Copy'
-    }, 1200)
+      copyText.value = "Copy";
+    }, 1200);
+  } catch (err) {
+    console.error("Failed to copy", err);
   }
-}
-
-// Expose methods for parent components
-defineExpose({
-  updateResponse,
-  copyResponse
-})
+};
 </script>
 
-<style scoped>
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  transition: background 0.3s;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-</style>
+<template>
+  <div class="flex flex-col h-full">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-[#ffcc99] text-xl font-poppins font-semibold">Result</h3>
+      <button
+        v-if="value !== 'Nothing returned yet.'"
+        @click="onCopy"
+        type="button"
+        class="rounded-md border border-[#333] bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#252525]"
+      >
+        {{ copyText }}
+      </button>
+    </div>
+    <div
+      class="bg-[#121212] border border-[#333] rounded-lg p-4 font-mono text-left text-sm text-gray-200 overflow-y-auto flex-1 flex flex-col"
+      style="max-height: 80vh; min-height: 120px"
+    >
+      <pre
+        v-if="value !== 'Nothing returned yet.'"
+        class="whitespace-pre-wrap break-all"
+        >{{ value }}</pre
+      >
+      <span v-else class="text-left">Nothing returned yet.</span>
+    </div>
+  </div>
+</template>

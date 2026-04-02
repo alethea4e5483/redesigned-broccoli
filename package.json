@@ -1,28 +1,37 @@
 {
-  "name": "subwaysurfers-api-web",
-  "version": "1.0.0",
+  "name": "tmp-vite",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "generate": "npx buf generate protos --template buf.gen.yaml",
+    "predev": "npm run generate",
+    "prebuild": "npm run generate",
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "proto:generate": "buf generate --path protos"
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.5.1",
-    "pinia": "^2.1.7",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "autoprefixer": "^10.4.27",
+    "lucide-vue-next": "^1.0.0",
+    "pinia": "^3.0.4",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.2",
+    "vue": "^3.5.30"
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.28.0",
-    "@bufbuild/protoc-gen-es": "^1.5.0",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.5",
-    "terser": "^5.46.1",
-    "typescript": "^5.3.2",
-    "vite": "^8.0.3"
+    "@bufbuild/buf": "^1.66.1",
+    "@bufbuild/protobuf": "^1.10.1",
+    "@bufbuild/protoc-gen-es": "^1.10.1",
+    "@connectrpc/connect": "^1.7.0",
+    "@connectrpc/connect-web": "^1.7.0",
+    "@connectrpc/protoc-gen-connect-es": "^1.7.0",
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/node": "^24.12.0",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vue/tsconfig": "^0.9.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1",
+    "vue-tsc": "^3.2.5"
   }
 }

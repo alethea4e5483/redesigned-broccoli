@@ -1,147 +1,203 @@
-<template>
-  <Transition name="fade">
-    <div v-if="isOpen" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4">
-      <div class="bg-[#121212] rounded-lg border border-[#333] max-w-md w-full max-h-96 overflow-y-auto">
-        <!-- Header -->
-        <div class="sticky top-0 bg-[#0a0a0a] border-b border-[#333] p-4 flex items-center justify-between">
-          <h2 class="text-lg font-poppins font-semibold text-white">Settings</h2>
-          <button
-            @click="closeModal"
-            class="text-gray-400 hover:text-white transition-colors"
-            aria-label="Close"
-          >
-            <i class="fas fa-times text-xl"></i>
-          </button>
-        </div>
-
-        <!-- Content -->
-        <div class="p-4 space-y-4">
-          <!-- Identity Token -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              Identity Token
-            </label>
-            <input
-              v-model="localToken"
-              type="password"
-              placeholder="Paste your JWT token"
-              class="w-full px-3 py-2 rounded-md bg-[#121212] text-white placeholder-gray-500 border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f] text-sm"
-            />
-            <button
-              @click="saveToken"
-              class="mt-2 w-full px-3 py-1 rounded-md bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold transition-colors text-sm"
-            >
-              Save Token
-            </button>
-          </div>
-
-          <!-- CORS Proxy -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              CORS Proxy URL
-            </label>
-            <input
-              v-model="localProxy"
-              type="text"
-              placeholder="http://localhost:3000"
-              class="w-full px-3 py-2 rounded-md bg-[#121212] text-white placeholder-gray-500 border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f] text-sm"
-            />
-            <button
-              @click="saveProxy"
-              class="mt-2 w-full px-3 py-1 rounded-md bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold transition-colors text-sm"
-            >
-              Save Proxy
-            </button>
-          </div>
-
-          <!-- Disable Limits -->
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-gray-300">
-              Disable Rate Limits
-            </label>
-            <input
-              v-model="localDisableLimits"
-              type="checkbox"
-              class="w-4 h-4 rounded cursor-pointer accent-[#ffcc99]"
-            />
-          </div>
-          <button
-            @click="saveLimits"
-            class="w-full px-3 py-1 rounded-md bg-[#ffcc99] hover:bg-[#ee9e4f] text-black font-semibold transition-colors text-sm"
-          >
-            Save Settings
-          </button>
-
-          <!-- Info -->
-          <div class="pt-4 border-t border-[#333]">
-            <p class="text-xs text-gray-400">
-              SubwaySurfers API Web - Vue 3 with Composition API
-            </p>
-            <p class="text-xs text-gray-400 mt-2">
-              For support and documentation, visit the repository.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Transition>
-</template>
-
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useAppStore } from '@/stores/app'
-import { useNotification } from '@/composables/useNotification'
+import { ref } from "vue";
+import { useAppStore } from "../stores/app";
+import { X, ChevronDown } from "lucide-vue-next";
 
-interface Props {
-  isOpen: boolean
-}
+defineProps<{
+  show: boolean;
+}>();
 
-interface Emits {
-  (e: 'close'): void
-}
+const emit = defineEmits<{
+  (e: "close"): void;
+}>();
 
-defineProps<Props>()
-const emit = defineEmits<Emits>()
+const store = useAppStore();
+const showSettings = ref(false);
+const corsProxyInput = ref(store.corsProxy);
 
-const store = useAppStore()
-const { showSuccess } = useNotification()
+const saveCorsProxy = () => {
+  store.setCorsProxy(corsProxyInput.value);
+};
 
-const localToken = ref(store.identityToken || '')
-const localProxy = ref(store.corsProxy)
-const localDisableLimits = ref(store.limitsDisabled)
-
-watch(() => store.identityToken, (newVal) => {
-  if (newVal) localToken.value = newVal
-})
-
-function saveToken() {
-  store.setIdentityToken(localToken.value || null)
-  showSuccess('Success', 'Token saved')
-}
-
-function saveProxy() {
-  store.setCorsProxy(localProxy.value)
-  showSuccess('Success', 'Proxy URL saved')
-}
-
-function saveLimits() {
-  store.setLimitsDisabled(localDisableLimits.value)
-  showSuccess('Success', 'Settings saved')
-}
-
-function closeModal() {
-  emit('close')
-}
+const toggleLimits = () => {
+  store.setLimitsDisabled(!store.limitsDisabled);
+};
 </script>
 
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
+<template>
+  <div
+    v-if="show"
+    class="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black bg-opacity-60 p-3 sm:items-center sm:p-6"
+    @click.self="emit('close')"
+  >
+    <div
+      class="relative w-full max-w-3xl overflow-y-auto rounded-xl bg-[#18181b] p-6 text-white max-h-[calc(100dvh-1.5rem)] sm:p-9 sm:max-h-[90vh]"
+    >
+      <button
+        @click="emit('close')"
+        type="button"
+        class="rounded-full p-2 inline-flex items-center justify-center text-gray-400 bg-transparent hover:text-white hover:bg-gray-700 transition-colors duration-200 absolute right-2 top-2 text-xl"
+      >
+        <X class="h-6 w-6" />
+      </button>
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
+      <div class="flex h-full flex-col gap-5">
+        <section class="mb-2 flex flex-col items-center justify-center gap-2">
+          <div class="w-full text-center text-sm">
+            <p>
+              You are using an unofficial tool. <br />This is not affiliated
+              with or endorsed by the original game developers.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold">Identity file</h3>
+          <p class="text-sm">
+            In your file Explorer, go into the folder
+            <code class="bg-gray-800 text-green-400 px-1 rounded"
+              >Android/data/com.kiloo.subwaysurf/</code
+            >
+            which is your game directory.
+          </p>
+          <p class="text-sm">
+            From there you find the folder
+            <code class="bg-gray-800 text-green-400 px-1 rounded"
+              >/auth/subway-prod/</code
+            >
+            which contains the
+            <code class="bg-gray-800 text-blue-400 px-1 rounded">identity</code>
+            file.
+          </p>
+          <p class="text-sm">
+            Move the file to a more accessible location, such as
+            <code class="bg-gray-800 text-green-400 px-1 rounded"
+              >Downloads</code
+            >
+            so you can easily access it with the file picker.
+          </p>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold">Docs</h3>
+          <p class="text-sm">
+            If you want to have a bit more explainations about what each
+            endpoint does you can read about it here
+            <a
+              target="_blank"
+              href="https://github.com/HerrErde/SubwaySurfers-Api"
+              class="text-blue-400 hover:underline"
+              >github.com/HerrErde/SubwaySurfers-Api</a
+            >.
+          </p>
+        </section>
+
+        <div class="text-sm sm:text-base">
+          <ul class="my-3 flex flex-col gap-2 font-medium">
+            <li class="bg-[#222] border-white/10 rounded-xl border-2 p-3">
+              This page runs entirely in your browser.<br />
+              Your
+              <code class="bg-gray-800 text-yellow-400 px-1 rounded"
+                >identityToken</code
+              >
+              is used to authenticate requests to the API and is
+              <strong>never shared</strong> with anyone else.<br />
+              A hosted
+              <code class="bg-gray-800 text-orange-400 px-1 rounded"
+                >Cloudflare Worker</code
+              >
+              is used as a CORS proxy to allow making requests to the API that
+              would otherwise be blocked by browser security policies.<br />
+              This is a simple CORS proxy that forwards your requests and
+              responses; it does
+              <strong>not log or store your data</strong>.<br />
+              You can change the CORS proxy URL below if you prefer to use a
+              different proxy service. (it has to work with POST requests)<br />
+            </li>
+          </ul>
+        </div>
+
+        <details
+          class="w-full max-w-lg mx-auto bg-[#1a1a1a] rounded-xl p-6 text-sm text-gray-300 border border-gray-600 overflow-hidden"
+          :open="showSettings"
+        >
+          <summary
+            @click.prevent="showSettings = !showSettings"
+            class="cursor-pointer select-none font-semibold text-lg text-white mb-2 list-none flex justify-between items-center"
+          >
+            Settings
+            <ChevronDown
+              :class="[
+                'w-5 h-5 text-gray-400 transition-transform duration-300',
+                showSettings ? 'rotate-180' : '',
+              ]"
+            />
+          </summary>
+
+          <div class="space-y-6 mt-4">
+            <section class="w-full text-center">
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  :checked="store.limitsDisabled"
+                  @change="toggleLimits"
+                  class="sr-only peer"
+                />
+                <div
+                  class="relative w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                ></div>
+                <span class="ms-3 text-sm font-medium text-gray-300"
+                  >Disable Limits</span
+                >
+              </label>
+            </section>
+
+            <section class="w-full text-left">
+              <div class="relative w-full max-w-md mx-auto">
+                <label class="block mb-2">
+                  <span class="block text-gray-300 font-semibold mb-1"
+                    >CORS Proxy</span
+                  >
+                  <div class="relative">
+                    <input
+                      v-model="corsProxyInput"
+                      type="text"
+                      placeholder="https://cors-anywhere.com/?url="
+                      class="h-10 w-full rounded-md bg-[#121212] px-3 font-thin text-white outline-none drop-shadow-sm transition-all duration-200 focus:bg-gray-800"
+                    />
+                    <button
+                      @click="saveCorsProxy"
+                      class="absolute top-0 right-0 h-full w-16 rounded-r-md bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-800 transition-colors"
+                    >
+                      Save
+                    </button>
+                  </div>
+                  <span class="block mt-1 text-xs text-gray-500">
+                    Url format: https://cors-anywhere.com/?url=REQUEST_URL
+                  </span>
+                </label>
+              </div>
+            </section>
+          </div>
+        </details>
+
+        <div class="grow"></div>
+        <section class="w-full text-center text-sm text-gray-500">
+          <a
+            target="_blank"
+            href="https://github.com/HerrErde/SubwaySurfers-Api-web"
+            class="hover:text-white"
+            >Source</a
+          >
+          ·
+          <a
+            target="_blank"
+            href="https://github.com/HerrErde/SubwaySurfers-Api"
+            class="hover:text-white"
+            >Api-Docs</a
+          >
+        </section>
+      </div>
+    </div>
+  </div>
+</template>

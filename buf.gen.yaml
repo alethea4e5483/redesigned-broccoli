@@ -1,11 +1,8 @@
 version: v1
-managed:
-  enabled: true
-  go_package_prefix:
-    default: github.com/herrerde/subwaysurfers-api-web/gen
 plugins:
-  - plugin: buf.build/bufbuild/es:v1
-    out: src/ts/modules/gen
-    opt:
-      - target=ts
-      - import_extension=none
+  - plugin: buf.build/bufbuild/es:v1.10.0
+    out: src/gen
+    opt: target=ts
+  - plugin: buf.build/connectrpc/es:v1.4.0
+    out: src/gen
+    opt: target=ts

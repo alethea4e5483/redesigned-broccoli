@@ -1,17 +1,17 @@
 - [x] Endpoints
+  - [x] CreatePlayer
+  - [x] UpdatePlayer
   - [x] GetPlayer
   - [x] GetPlayerByTag
   - [x] GetPlayerById
+  - [x] Match
+  - [x] GetWallet
   - [x] GetFriends
   - [x] GetInvites
   - [x] GetFriendsAndInvites
   - [x] SendInvite
   - [x] GetRelationship
-  - [x] GetWallet
-  - [x] Match
   - [x] InitializeEnergy
   - [x] GetEnergies
   - [x] AddEnergy
   - [x] UseEnergy
-  - [ ] CreatePlayer
-  - [ ] UpdatePlayer

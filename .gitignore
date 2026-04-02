@@ -1,33 +1,8 @@
-# Dependencies
-node_modules/
-npm-debug.log
-yarn-error.log
-pnpm-debug.log
-
-# Production
+src/gen/*
+!src/gen/.gitkeep
 dist/
-build/
-
-# Vite
-.vite/
-
-# Generated protobuf files
-src/ts/gen/
-**/*.pb.ts
-**/*.pb.es.ts
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+node_modules/
 .DS_Store
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Cache
-.cache/
+*.local
+dev_server.log
+backup/

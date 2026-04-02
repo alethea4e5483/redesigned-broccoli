@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "PowerGrotesk";
+  src: url("./assets/font/PowerGrotesk-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+:root {
+  --main: #ffcc99;
+}
+
+body {
+  @apply bg-[#09090b] text-white font-sans overflow-x-hidden;
+  --grid-size: 60px;
+  --grid-strength: 1px;
+  --grid-dash: 10px;
+  --grid-gap: 5px;
+  --grid-color: #333;
+  --paper-color: #09090b;
+  background-color: var(--paper-color);
+  background-size:
+    var(--grid-dash) var(--grid-dash),
+    var(--grid-size) var(--grid-size);
+  background-image:
+    linear-gradient(
+      to bottom,
+      transparent var(--grid-gap),
+      var(--paper-color) var(--grid-gap)
+    ),
+    linear-gradient(
+      to right,
+      var(--grid-color) var(--grid-strength),
+      transparent var(--grid-strength)
+    ),
+    linear-gradient(
+      to right,
+      transparent var(--grid-gap),
+      var(--paper-color) var(--grid-gap)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--grid-color) var(--grid-strength),
+      transparent var(--grid-strength)
+    );
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.sb-selected {
+  @apply bg-[#ffcc99] text-black font-bold;
+}
+
+.sidebar-link:not(.sb-selected):hover {
+  @apply bg-[#ffffff0d] font-bold;
+}
+
+.roundborder {
+  border-top-left-radius: 37px;
+}
+
+@media (max-width: 1024px) {
+  .roundborder {
+    border-radius: 0;
+  }
+}

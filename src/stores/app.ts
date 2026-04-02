@@ -1,62 +1,74 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
 
-export const useAppStore = defineStore('app', () => {
-  // State
-  const identityToken = ref<string | null>(localStorage.getItem('identityToken') || null)
-  const tokenExpiry = ref<Date | null>(
-    localStorage.getItem('tokenExpiry') ? new Date(localStorage.getItem('tokenExpiry')!) : null
-  )
-  const limitsDisabled = ref<boolean>(localStorage.getItem('limitsDisabled') === 'true')
-  const corsProxy = ref<string>(
-    localStorage.getItem('corsProxy') || 'https://noisy-disk-638c.herrerde.workers.dev/?url='
-  )
+export interface Endpoint {
+  name: string;
+  endpoint: string;
+  desc?: string;
+  params: any;
+  request?: string;
+  response?: string;
+  type: "rpc" | "json";
+  body?: any;
+}
 
-  // Computed
-  const hasIdentityToken = computed(() => !!identityToken.value)
-  const isTokenExpired = computed(() => {
-    if (!tokenExpiry.value) return false
-    return new Date() > tokenExpiry.value
-  })
+export const useAppStore = defineStore("app", () => {
+  const identityToken = ref<string | null>(
+    localStorage.getItem("identityToken"),
+  );
+  const identityExpiry = ref<string | null>(
+    localStorage.getItem("identityExpiry"),
+  );
+  const corsProxy = ref(
+    localStorage.getItem("corsProxy") ||
+      "https://noisy-disk-638c.herrerde.workers.dev/?url=",
+  );
+  const limitsDisabled = ref(localStorage.getItem("limitsDisabled") === "true");
 
-  // Actions
-  function setIdentityToken(token: string | null, expiry?: Date): void {
-    identityToken.value = token
-    if (token) {
-      localStorage.setItem('identityToken', token)
-      if (expiry) {
-        tokenExpiry.value = expiry
-        localStorage.setItem('tokenExpiry', expiry.toISOString())
-      }
+  const setIdentity = (token: string, expiry: Date | null) => {
+    identityToken.value = token;
+    localStorage.setItem("identityToken", token);
+    if (expiry) {
+      const expiryStr = expiry.toISOString();
+      identityExpiry.value = expiryStr;
+      localStorage.setItem("identityExpiry", expiryStr);
     } else {
-      localStorage.removeItem('identityToken')
-      localStorage.removeItem('tokenExpiry')
-      tokenExpiry.value = null
+      identityExpiry.value = null;
+      localStorage.removeItem("identityExpiry");
     }
-  }
+  };
 
-  function setLimitsDisabled(disabled: boolean): void {
-    limitsDisabled.value = disabled
-    localStorage.setItem('limitsDisabled', disabled ? 'true' : 'false')
-  }
+  const clearIdentity = () => {
+    identityToken.value = null;
+    identityExpiry.value = null;
+    localStorage.removeItem("identityToken");
+    localStorage.removeItem("identityExpiry");
+  };
 
-  function setCorsProxy(proxy: string): void {
-    corsProxy.value = proxy
-    localStorage.setItem('corsProxy', proxy)
-  }
+  const setCorsProxy = (url: string) => {
+    corsProxy.value = url;
+    localStorage.setItem("corsProxy", url);
+  };
+
+  const setLimitsDisabled = (disabled: boolean) => {
+    limitsDisabled.value = disabled;
+    localStorage.setItem("limitsDisabled", String(disabled));
+  };
+
+  const isTokenExpired = computed(() => {
+    if (!identityExpiry.value) return false;
+    return new Date(identityExpiry.value) < new Date();
+  });
 
   return {
-    // State
     identityToken,
-    tokenExpiry,
-    limitsDisabled,
+    identityExpiry,
     corsProxy,
-    // Computed
-    hasIdentityToken,
-    isTokenExpired,
-    // Actions
-    setIdentityToken,
+    limitsDisabled,
+    setIdentity,
+    clearIdentity,
+    setCorsProxy,
     setLimitsDisabled,
-    setCorsProxy
-  }
-})
+    isTokenExpired,
+  };
+});
