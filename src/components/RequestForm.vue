@@ -25,14 +25,14 @@ const formValues = ref<Record<string, any>>({});
 const metadataEntries = ref<{ key: string; value: any }[]>([]);
 const errors = ref<string | null>(null);
 const isSubmitting = ref(false);
-const userDataJson = ref("");
+const playerDataJson = ref("");
 const metadataSelection = ref("");
 
 const initializeForm = () => {
   formValues.value = {};
   metadataEntries.value = [];
   errors.value = null;
-  userDataJson.value = "";
+  playerDataJson.value = "";
 
   if (props.endpoint.params) {
     Object.entries(props.endpoint.params).forEach(
@@ -251,24 +251,24 @@ const handleSubmit = async () => {
 
 const handleAutofill = () => {
   try {
-    const input = userDataJson.value.trim();
+    const input = playerDataJson.value.trim();
     if (!input) return;
     const parsed = JSON.parse(input);
-    const userData = parsed.userData;
-    if (!userData) {
-      alert("JSON must contain { userData: {...} }");
+    const playerData = parsed.player;
+    if (!playerData) {
+      alert("JSON must contain { player: {...} }");
       return;
     }
 
-    if (userData.name) formValues.value["name"] = userData.name;
-    if (userData.level !== undefined)
-      formValues.value["level"] = userData.level;
-    if (userData.highscore !== undefined)
-      formValues.value["highscore"] = userData.highscore;
+    if (playerData.name) formValues.value["name"] = playerData.name;
+    if (playerData.level !== undefined)
+      formValues.value["level"] = playerData.level;
+    if (playerData.highscore !== undefined)
+      formValues.value["highscore"] = playerData.highscore;
 
-    if (Array.isArray(userData.metadataMap)) {
+    if (Array.isArray(playerData.metadataMap)) {
       metadataEntries.value = [];
-      userData.metadataMap
+      playerData.metadataMap
         .slice(0, 20)
         .forEach(([key, value]: [string, any]) => {
           metadataEntries.value.push({ key, value });
@@ -297,13 +297,13 @@ const onAddMetadata = () => {
   <div class="space-y-6">
     <div v-if="hasMetadataParam" class="space-y-2">
       <label class="block text-sm font-medium text-gray-300"
-        >Paste userData JSON</label
+        >Paste playerData JSON</label
       >
       <textarea
-        v-model="userDataJson"
+        v-model="playerDataJson"
         rows="2"
         class="w-full px-3 py-2 rounded-md bg-[#121212] text-white border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f]"
-        placeholder='{"userData":{...}}'
+        placeholder='{"playerData":{...}}'
       ></textarea>
       <button
         @click="handleAutofill"
