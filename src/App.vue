@@ -63,7 +63,7 @@ const {
 
     <!-- Main Content -->
     <main
-      class="flex-1 grid grid-cols-1 py-4 gap-4 px-4 lg:grid-cols-2 lg:py-10 lg:gap-6 lg:px-8 h-full roundborder border-l border-[#1a1a1a]"
+      class="flex-1 flex flex-col py-4 gap-4 px-4 lg:flex-row lg:py-6 lg:gap-6 lg:px-6 h-full border-l border-[#1a1a1a]"
     >
       <MainPanel :selected-endpoint="selectedEndpoint" />
     </main>

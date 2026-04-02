@@ -20,7 +20,6 @@ const {
   metadataSelection,
   availableMetadataKeys,
   hasMetadataParam,
-  addMetadataEntry,
   removeMetadataEntry,
   getMetadataDef,
   handleSubmit,

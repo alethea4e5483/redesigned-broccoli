@@ -10,7 +10,7 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-const { showSettings, corsProxyInput, saveCorsProxy, toggleLimits } = useInfoModal();
+const { showSettings, corsProxyInput, limitsDisabled, saveCorsProxy, toggleLimits } = useInfoModal();
 </script>
 
 <template>
@@ -128,12 +128,13 @@ const { showSettings, corsProxyInput, saveCorsProxy, toggleLimits } = useInfoMod
               <label class="inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  :checked="store.limitsDisabled"
+                  :checked="limitsDisabled"
                   @change="toggleLimits"
                   class="sr-only peer"
                 />
                 <div
-                  class="relative w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                  class="relative w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                  style="overflow: hidden;"
                 ></div>
                 <span class="ms-3 text-sm font-medium text-gray-300"
                   >Disable Limits</span
@@ -190,3 +191,14 @@ const { showSettings, corsProxyInput, saveCorsProxy, toggleLimits } = useInfoMod
     </div>
   </div>
 </template>
+
+<style scoped>
+input[type="checkbox"].peer:checked + div::after {
+  content: '';
+  transform: translateX(100%);
+}
+
+input[type="checkbox"].peer + div::after {
+  content: '';
+}
+</style>

@@ -13,7 +13,7 @@ const handleCopy = () => onCopy(props.value);
 <template>
   <div class="flex flex-col h-full">
     <div class="flex justify-between items-center mb-3">
-      <h3 class="text-[#ffcc99] text-xl font-poppins font-semibold">Result</h3>
+      <h3 class="text-[#ffcc99] text-xl font-semibold">Result</h3>
       <button
         v-if="value !== 'Nothing returned yet.'"
         @click="handleCopy"

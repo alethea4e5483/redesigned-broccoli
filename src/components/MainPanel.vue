@@ -11,7 +11,7 @@ const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, se
 </script>
 
 <template>
-  <div class="contents">
+  <div class="w-full flex flex-col lg:flex-row gap-4 lg:gap-6">
     <!-- Mobile Tabs -->
     <div
       v-if="selectedEndpoint"
@@ -54,18 +54,18 @@ const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, se
     <!-- Request Panel -->
     <div
       :class="[
-        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] bg-[#09090b] h-[calc(100dvh-11rem)] lg:h-screen overflow-y-auto custom-scrollbar',
+        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] bg-[#09090b] h-[calc(100dvh-11rem)] lg:h-screen overflow-y-auto custom-scrollbar lg:flex-[1.2]',
         activeTab === 'request' ? 'block' : 'hidden lg:block',
       ]"
     >
       <div v-if="selectedEndpoint">
-        <h2 class="text-[#ffcc99] font-poppins text-2xl font-semibold mb-2">
+        <h2 class="text-[#ffcc99] text-2xl font-semibold mb-2">
           {{ selectedEndpoint.name }}
         </h2>
-        <p class="font-poppins text-gray-400 mb-4">
+        <p class="text-gray-400 mb-4">
           {{ selectedEndpoint.endpoint }}
         </p>
-        <p v-if="selectedEndpoint.desc" class="font-poppins text-gray-400 mb-2">
+        <p v-if="selectedEndpoint.desc" class="text-gray-400 mb-2">
           {{ selectedEndpoint.desc }}
         </p>
 
@@ -79,7 +79,7 @@ const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, se
         v-else
         class="flex flex-col items-center justify-center h-full text-gray-500"
       >
-        <h2 class="text-[#ffcc99] font-poppins text-2xl font-semibold mb-2">
+        <h2 class="text-[#ffcc99] text-2xl font-semibold mb-2">
           Select an Endpoint
         </h2>
         <p class="font-poppins">Choose an endpoint from the sidebar to test.</p>
@@ -89,7 +89,7 @@ const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, se
     <!-- Response Panel -->
     <div
       :class="[
-        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] flex-col h-[calc(100dvh-11rem)] lg:h-auto',
+        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] flex-col h-[calc(100dvh-11rem)] lg:h-screen lg:flex-1',
         activeTab === 'response' ? 'flex' : 'hidden lg:flex',
       ]"
     >

@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useAppStore } from "../stores/app";
 import { endpointsList } from "../endpoints";
-import { Upload, FileText, Search } from "lucide-vue-next";
+import { Upload, FileText } from "lucide-vue-next";
 import { useSidebar } from "../composables/useSidebar";
 
 const props = defineProps<{
@@ -14,7 +14,8 @@ const emit = defineEmits<{
 }>();
 
 const store = useAppStore();
-const { searchQuery, fileInput, expiryDisplay, onFileChange, triggerUpload } = useSidebar();
+const { searchQuery, expiryDisplay, onFileChange, triggerUpload } =
+  useSidebar();
 
 const filteredEndpoints = computed(() => {
   if (!searchQuery.value) return endpointsList;
@@ -28,54 +29,51 @@ const filteredEndpoints = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center w-full p-4">
-    <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99] w-full">
-      Endpoints
-    </div>
+  <div class="block lg:flex w-full">
+    <div class="flex flex-col items-center w-full p-4">
+      <div class="text-left text-lg mb-2 text-[#ffcc99] w-full">Endpoints</div>
 
-    <p
-      v-if="store.identityExpiry"
-      class="font-poppins mb-2 text-center text-xs text-gray-400"
-    >
-      Expires:<br />{{ expiryDisplay }}
-    </p>
-
-    <div class="flex items-center gap-2 mb-4 w-full justify-center">
-      <button
-        @click="triggerUpload"
-        type="button"
-        :class="[
-          'cursor-pointer duration-100 p-2 px-6 rounded-[7px] font-semibold text-sm flex items-center gap-2',
-          store.identityToken
-            ? 'bg-[#7760fe] text-white'
-            : 'bg-white text-black hover:bg-[#7760fe] hover:text-white',
-        ]"
+      <p
+        v-if="store.identityExpiry"
+        class="mb-2 text-center text-xs text-gray-400"
       >
-        <FileText v-if="store.identityToken" class="w-4 h-4" />
-        <Upload v-else class="w-4 h-4" />
-        {{ store.identityToken ? "identity" : "Upload Identity" }}
-      </button>
-      <input
-        ref="fileInput"
-        type="file"
-        accept="*"
-        class="hidden"
-        @change="onFileChange"
-      />
-    </div>
+        Expires:<br />{{ expiryDisplay }}
+      </p>
 
-    <div class="w-full px-4 mb-4">
-      <div class="relative">
-        <Search
-          class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
-        />
+      <div class="flex items-center gap-2 mb-2">
+        <button
+          @click="triggerUpload"
+          type="button"
+          class="cursor-pointer hover:bg-[#7760fe] hover:text-white duration-100 p-2 px-6 rounded-[7px] bg-white text-black"
+        >
+          <FileText v-if="store.identityToken" class="w-4 h-4" />
+          <Upload v-else class="w-4 h-4" />
+          {{ store.identityToken ? "identity" : "Upload Identity" }}
+        </button>
         <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search endpoints..."
-          autocomplete="off"
-          class="w-full pl-10 pr-3 py-2.5 rounded-md bg-[#121212] text-white border border-[#333] focus:outline-none focus:ring-1 focus:ring-[#ee9e4f]"
+          ref="fileInput"
+          type="file"
+          accept="*"
+          class="hidden"
+          @change="onFileChange"
         />
+      </div>
+
+      <div>
+        <div class="px-4 mb-4 w-full">
+          <input
+            v-model="searchQuery"
+            id="endpointSearch"
+            type="text"
+            placeholder="Search endpoints..."
+            autocomplete="off"
+            class="endpointSearch px-3 py-2.5"
+          />
+        </div>
+        <div
+          id="mobileEndpointList"
+          class="sidebar-links mb-5 w-full flex justify-center flex-col items-center gap-3"
+        ></div>
       </div>
     </div>
 
@@ -89,7 +87,7 @@ const filteredEndpoints = computed(() => {
           props.selectedEndpoint?.endpoint === ep.endpoint ? 'sb-selected' : '',
         ]"
       >
-        <span class="font-semibold font-poppins text-sm">{{ ep.name }}</span>
+        <span class="">{{ ep.name }}</span>
       </div>
     </div>
   </div>
