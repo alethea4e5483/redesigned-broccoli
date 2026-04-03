@@ -2,32 +2,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 @font-face {
-  font-family: "PowerGrotesk";
-  src: url("./assets/font/PowerGrotesk-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-:root {
   font-family: PowerGrotesk;
-  --main: #ffcc99;
+  src: url(./assets/font/PowerGrotesk-Medium.ttf) format("truetype");
 }
 
 .sidebar {
   width: 16.7vw;
-}
-
-.sidebar-mobile {
-  width: 80vw;
-  display: absolute;
-  left: 0;
-  z-index: 100;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
 }
 
 .sidebar-link {
@@ -49,14 +29,6 @@
   background: #7760fe;
 }
 
-.sidebar-link a {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-  gap: 5px;
-}
-
 .font-poppins {
   font-family: "Poppins";
 }
@@ -68,56 +40,12 @@
   font-size: 1.05rem;
 }
 
-.dark {
-  --sidebar: #030e11;
-  --sidebar-foreground: #fff;
-  --sidebar-primary: #ffffff00;
-  --sidebar-primary-foreground: #fff;
-  --sidebar-accent: #191919;
-  --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-border: #333;
-  --sidebar-ring: oklch(0.553 0.013 58.071);
-}
-
 .roundborder {
   border-top-left-radius: 37px;
   background-size: 47px 47px;
   background-position:
     0 0,
     21px 21px;
-}
-
-@media only screen and (max-width: 1024px) {
-  .formatcontainer {
-    padding-right: 20px !important;
-    padding-left: 20px !important;
-    margin-top: 22px !important;
-  }
-
-  .inputcontainer {
-    padding-left: 20px !important;
-  }
-
-  .formatbtn {
-    margin-bottom: 12px !important;
-  }
-
-  .mobilemt {
-    margin-top: 16px !important;
-  }
-
-  .containermobile {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column-reverse;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  body {
-    overflow: visible !important;
-  }
 }
 
 body {
@@ -179,6 +107,10 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.4);
+}
+
+:root {
+  --main: #ffcc99;
 }
 
 .endpointSearch {

@@ -16,7 +16,7 @@ const {
 </script>
 
 <template>
-  <div class="bg-[#09090b] text-white font-sans min-h-screen block lg:flex">
+  <div class="text-white font-sans min-h-screen block lg:flex">
     <div class="lg:hidden flex items-center justify-between bg-[#09090b] p-4">
       <a href="#" class="cursor-pointer flex items-center gap-2">
         <span class="font-bold text-white text-xl">Subway Surfers API</span>
