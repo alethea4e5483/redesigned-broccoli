@@ -1,4 +1,4 @@
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, isRef, unref } from "vue";
 import { useAppStore } from "../stores/app";
 import { createPromiseClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
@@ -11,12 +11,16 @@ import { PrivateService as TournamentService } from "../gen/tournament_connect";
 
 export function useRequestForm(endpoint: any) {
   const store = useAppStore();
+  const endpointRef = isRef(endpoint) ? endpoint : ref(endpoint);
+  const getEndpoint = () => unref(endpointRef);
   const formValues = ref<Record<string, any>>({});
   const metadataEntries = ref<{ key: string; value: any }[]>([]);
   const errors = ref<string | null>(null);
   const isSubmitting = ref(false);
   const playerDataJson = ref("");
   const metadataSelection = ref("");
+  let abortController: AbortController | null = null;
+  let requestGeneration = 0;
   const notify = (status: "error" | "success", title: string, text: string) => {
     const NotifyCtor = (window as any).Notify;
     if (typeof NotifyCtor === "function") {
@@ -44,8 +48,8 @@ export function useRequestForm(endpoint: any) {
     errors.value = null;
     playerDataJson.value = "";
 
-    if (endpoint.params) {
-      Object.entries(endpoint.params).forEach(
+    if (getEndpoint().params) {
+      Object.entries(getEndpoint().params).forEach(
         ([key, param]: [string, any]) => {
           if (param.type !== "list") {
             const fieldName = param.value || key;
@@ -56,7 +60,19 @@ export function useRequestForm(endpoint: any) {
     }
   };
 
-  watch(() => endpoint, initializeForm, { immediate: true });
+  watch(
+    endpointRef,
+    () => {
+      // Cancel any pending requests and invalidate their responses
+      requestGeneration++;
+      if (abortController) {
+        abortController.abort();
+        abortController = null;
+      }
+      initializeForm();
+    },
+    { immediate: true },
+  );
 
   const addMetadataEntry = (key: string) => {
     if (metadataEntries.value.length >= 20) {
@@ -73,16 +89,18 @@ export function useRequestForm(endpoint: any) {
   };
 
   const availableMetadataKeys = computed(() => {
-    const metadataParam = Object.values(endpoint.params || {}).find(
+    const metadataParam = Object.values(getEndpoint().params || {}).find(
       (p: any) => p.type === "list" && p.metadata,
     );
     if (!metadataParam) return [];
     const allKeys = Object.keys((metadataParam as any).metadata);
-    return allKeys.filter((k) => !metadataEntries.value.find((e) => e.key === k));
+    return allKeys.filter(
+      (k) => !metadataEntries.value.find((e) => e.key === k),
+    );
   });
 
   const getMetadataDef = (key: string) => {
-    const metadataParam = Object.values(endpoint.params || {}).find(
+    const metadataParam = Object.values(getEndpoint().params || {}).find(
       (p: any) => p.type === "list" && p.metadata,
     );
     return (metadataParam as any).metadata[key];
@@ -91,7 +109,7 @@ export function useRequestForm(endpoint: any) {
   const validate = () => {
     if (store.limitsDisabled) return true;
 
-    for (const [key, param] of Object.entries(endpoint.params || {})) {
+    for (const [key, param] of Object.entries(getEndpoint().params || {})) {
       const p = param as any;
       if (p.type === "list" && p.metadata) {
         for (const entry of metadataEntries.value) {
@@ -123,15 +141,15 @@ export function useRequestForm(endpoint: any) {
     return true;
   };
 
-  const buildBody = () => {
+  const buildBody = (currentEndpoint: any = getEndpoint()) => {
     let body: any = {};
 
-    if (endpoint.body) {
+    if (currentEndpoint.body) {
       const fillTemplate = (obj: any): any => {
         if (typeof obj === "string" && obj.startsWith("$")) {
           const key = obj.slice(1);
           let val = formValues.value[key];
-          const param = endpoint.params?.[key];
+          const param = currentEndpoint.params?.[key];
           if (param?.type === "int" || param === "int") {
             val = parseInt(val, 10);
           }
@@ -143,9 +161,9 @@ export function useRequestForm(endpoint: any) {
         }
         return obj;
       };
-      body = fillTemplate(endpoint.body);
-    } else if (endpoint.params) {
-      Object.entries(endpoint.params).forEach(
+      body = fillTemplate(currentEndpoint.body);
+    } else if (currentEndpoint.params) {
+      Object.entries(currentEndpoint.params).forEach(
         ([key, param]: [string, any]) => {
           if (param.type === "list" && param.metadata) {
             if (metadataEntries.value.length > 0) {
@@ -189,7 +207,11 @@ export function useRequestForm(endpoint: any) {
     errors.value = null;
     if (!store.identityToken) {
       errors.value = "Upload JSON first!";
-      notify("error", "Token missing", "You need to upload a valid identity file first");
+      notify(
+        "error",
+        "Token missing",
+        "You need to upload a valid identity file first",
+      );
       return;
     }
 
@@ -204,13 +226,29 @@ export function useRequestForm(endpoint: any) {
     beforeSubmit();
     isSubmitting.value = true;
 
+    // Cancel any previous request
+    if (abortController) {
+      abortController.abort();
+    }
+    abortController = new AbortController();
+
+    // Capture current values before async operations
+    const currentGeneration = requestGeneration;
+    const currentEndpoint = { ...getEndpoint() }; // Capture endpoint snapshot
+    const body = buildBody(currentEndpoint);
+
     try {
-      const body = buildBody();
+      // Check if endpoint changed before proceeding
+      if (currentGeneration !== requestGeneration) {
+        isSubmitting.value = false;
+        return;
+      }
+
       const baseUrl = "https://subway.prod.sybo.net";
 
-      if (endpoint.type === "json") {
+      if (currentEndpoint.type === "json") {
         const res = await fetch(
-          store.corsProxy + baseUrl + endpoint.endpoint,
+          store.corsProxy + baseUrl + currentEndpoint.endpoint,
           {
             method: "POST",
             headers: {
@@ -218,10 +256,14 @@ export function useRequestForm(endpoint: any) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(body),
+            signal: abortController.signal,
           },
         );
         const data = await res.json();
-        onResponse(JSON.stringify(data, null, 2));
+        // Only show response if we're still on the same endpoint
+        if (currentGeneration === requestGeneration) {
+          onResponse(JSON.stringify(data, null, 2));
+        }
       } else {
         // Connect-gRPC
         const transport = createConnectTransport({
@@ -240,7 +282,7 @@ export function useRequestForm(endpoint: any) {
         });
 
         let client: any;
-        const path = endpoint.endpoint.replace("/rpc/", "/");
+        const path = currentEndpoint.endpoint.replace("/rpc/", "/");
         let methodName = path.split("/").pop();
 
         if (methodName) {
@@ -258,16 +300,28 @@ export function useRequestForm(endpoint: any) {
         }
 
         if (client && methodName && client[methodName]) {
-          const response = await client[methodName](body);
-          const plainResponse = JSON.parse(JSON.stringify(response));
-          onResponse(JSON.stringify(plainResponse, null, 2));
+          const response = await client[methodName](body, {
+            signal: abortController?.signal,
+          });
+          // Only show response if we're still on the same endpoint
+          if (currentGeneration === requestGeneration) {
+            const plainResponse = JSON.parse(JSON.stringify(response));
+            onResponse(JSON.stringify(plainResponse, null, 2));
+          }
         } else {
           throw new Error(`Service or method ${methodName} not found`);
         }
       }
     } catch (err: any) {
-      console.error(err);
-      onResponse(`Error: ${err.message}`);
+      // Ignore abort errors (when user switches endpoint)
+      if (err.name === "AbortError") {
+        return;
+      }
+      // Only show error if we're still on the same endpoint
+      if (currentGeneration === requestGeneration) {
+        console.error(err);
+        onResponse(`Error: ${err.message}`);
+      }
     } finally {
       isSubmitting.value = false;
     }
@@ -280,7 +334,11 @@ export function useRequestForm(endpoint: any) {
       const parsed = JSON.parse(input);
       const userData = parsed.userData;
       if (!userData) {
-        notify("error", "Invalid JSON", "JSON must contain { userData: {...} }");
+        notify(
+          "error",
+          "Invalid JSON",
+          "JSON must contain { userData: {...} }",
+        );
         return;
       }
 

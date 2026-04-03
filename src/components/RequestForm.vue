@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toRef } from "vue";
 import { useRequestForm } from "../composables/useRequestForm";
 
 const props = defineProps<{
@@ -24,7 +25,7 @@ const {
   handleSubmit,
   handleAutofill,
   onAddMetadata,
-} = useRequestForm(props.endpoint);
+} = useRequestForm(toRef(props, "endpoint"));
 
 const handleFormSubmit = async () => {
   await handleSubmit(
@@ -158,9 +159,9 @@ const handleFormSubmit = async () => {
       <div class="pt-4">
         <button
           type="submit"
-        :disabled="isSubmitting"
-        class="w-full sm:w-auto bg-[#ffcc99] hover:bg-[#ee9e4f] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
-      >
+          :disabled="isSubmitting"
+          class="w-full sm:w-auto bg-[#ffcc99] hover:bg-[#ee9e4f] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+        >
           <i v-if="!isSubmitting" class="fas fa-paper-plane"></i>
           <div
             v-else
