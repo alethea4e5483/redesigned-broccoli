@@ -90,14 +90,20 @@ watch(
           @before-submit="clearResponse"
         />
       </div>
-      <div
-        v-else
-        class="flex flex-col items-center justify-center h-full text-gray-500"
-      >
-        <h2 class="text-[#ffcc99] text-2xl font-semibold mb-2">
+
+
+      <div v-else>
+        <h2
+          id="endpointTitle"
+          class="text-[#ffcc99] font-poppins text-2xl font-semibold mb-2"
+        >
           Select an Endpoint
         </h2>
-        <p class="font-poppins">Choose an endpoint from the sidebar to test.</p>
+        <p id="endpointPath" class="font-poppins text-gray-400 mb-4">
+          Choose an endpoint from the sidebar to test.
+        </p>
+        <p id="endpointDesc" class="font-poppins text-gray-400 mb-2"></p>
+        <div id="endpointForm"></div>
       </div>
     </div>
 
