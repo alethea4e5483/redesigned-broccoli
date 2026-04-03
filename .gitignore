@@ -1,8 +1,3 @@
-src/gen/*
-!src/gen/.gitkeep
-dist/
 node_modules/
-.DS_Store
-*.local
-dev_server.log
-backup/
+dist/
+src/gen/*
