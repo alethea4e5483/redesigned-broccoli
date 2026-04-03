@@ -109,27 +109,8 @@ const filteredEndpoints = computed(() => {
 
     <div class="flex-1 overflow-y-auto w-full custom-scrollbar px-0">
       <div
-        id="mobileEndpointList"
-        class="sidebar-links mb-5 w-full flex justify-center flex-col items-center gap-3 lg:hidden"
-      >
-        <div
-          v-for="ep in filteredEndpoints"
-          :key="ep.endpoint"
-          @click="emit('select-endpoint', ep)"
-          :class="[
-            'sidebar-link rounded-[9px] text-left w-[90%] transition-colors cursor-pointer px-3 py-2 flex flex-col justify-between border border-transparent',
-            props.selectedEndpoint?.endpoint === ep.endpoint
-              ? 'sb-selected'
-              : '',
-          ]"
-        >
-          <span class="font-semibold font-poppins">{{ ep.name }}</span>
-        </div>
-      </div>
-
-      <div
         id="endpointList"
-        class="sidebar-links mb-5 w-full flex flex-col items-center gap-3 hidden lg:flex"
+        class="sidebar-links mb-5 w-full flex flex-col items-center gap-3"
       >
         <div
           v-for="ep in filteredEndpoints"
