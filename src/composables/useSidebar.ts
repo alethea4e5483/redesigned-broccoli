@@ -83,6 +83,17 @@ export function useSidebar() {
     fileInput.value?.click();
   };
 
+  const removeIdentity = () => {
+    if (!store.identityToken) {
+      notify("error", "No Identity", "No identity is currently stored.");
+      return;
+    }
+    const ok = confirm("Remove stored identity token from this browser?");
+    if (!ok) return;
+    store.clearIdentity();
+    notify("success", "Identity removed", "Identity cleared from local storage");
+  };
+
   const expiryDisplay = computed(() => {
     if (!store.identityExpiry) return "";
     return new Date(store.identityExpiry).toLocaleString();
@@ -97,5 +108,6 @@ export function useSidebar() {
     hasIdentity,
     onFileChange,
     triggerUpload,
+    removeIdentity,
   };
 }

@@ -5,6 +5,7 @@ export interface Endpoint {
   name: string;
   endpoint: string;
   desc?: string;
+  subdesc?: string;
   params: any;
   request?: string;
   response?: string;

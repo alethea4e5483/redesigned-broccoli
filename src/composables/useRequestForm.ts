@@ -42,6 +42,34 @@ export function useRequestForm(endpoint: any) {
     }
   };
 
+  const isLeafParam = (p: any) => {
+    if (!p || typeof p !== "object") return false;
+    return (
+      "type" in p ||
+      "metadata" in p ||
+      "regex" in p ||
+      "example" in p ||
+      "required" in p ||
+      "default" in p ||
+      "name" in p ||
+      "value" in p
+    );
+  };
+
+  const flattenParams = (params: any, prefix = ""): Array<any> => {
+    const out: Array<any> = [];
+    if (!params) return out;
+    for (const [k, v] of Object.entries(params)) {
+      const fullKey = prefix ? `${prefix}.${k}` : k;
+      if (isLeafParam(v)) {
+        out.push({ key: fullKey, param: v });
+      } else {
+        out.push(...flattenParams(v as any, fullKey));
+      }
+    }
+    return out;
+  };
+
   const initializeForm = () => {
     formValues.value = {};
     metadataEntries.value = [];
@@ -49,14 +77,13 @@ export function useRequestForm(endpoint: any) {
     playerDataJson.value = "";
 
     if (getEndpoint().params) {
-      Object.entries(getEndpoint().params).forEach(
-        ([key, param]: [string, any]) => {
-          if (param.type !== "list") {
-            const fieldName = param.value || key;
-            formValues.value[fieldName] = param.default || "";
-          }
-        },
-      );
+      const flat = flattenParams(getEndpoint().params || {});
+      flat.forEach(({ key, param }: { key: string; param: any }) => {
+        if (param.type !== "list") {
+          const fieldName = param.value || key;
+          formValues.value[fieldName] = param.default || "";
+        }
+      });
     }
   };
 
@@ -89,38 +116,36 @@ export function useRequestForm(endpoint: any) {
   };
 
   const availableMetadataKeys = computed(() => {
-    const metadataParam = Object.values(getEndpoint().params || {}).find(
-      (p: any) => p.type === "list" && p.metadata,
+    const metaEntry = flattenParams(getEndpoint().params || {}).find(
+      (e: any) => e.param?.type === "list" && e.param?.metadata,
     );
-    if (!metadataParam) return [];
-    const allKeys = Object.keys((metadataParam as any).metadata);
-    return allKeys.filter(
-      (k) => !metadataEntries.value.find((e) => e.key === k),
-    );
+    if (!metaEntry) return [];
+    const allKeys = Object.keys(metaEntry.param.metadata || {});
+    return allKeys.filter((k) => !metadataEntries.value.find((e) => e.key === k));
   });
 
   const getMetadataDef = (key: string) => {
-    const metadataParam = Object.values(getEndpoint().params || {}).find(
-      (p: any) => p.type === "list" && p.metadata,
+    const metaEntry = flattenParams(getEndpoint().params || {}).find(
+      (e: any) => e.param?.type === "list" && e.param?.metadata,
     );
-    return (metadataParam as any).metadata[key];
+    return metaEntry?.param?.metadata?.[key];
   };
 
   const validate = () => {
     if (store.limitsDisabled) return true;
 
-    for (const [key, param] of Object.entries(getEndpoint().params || {})) {
-      const p = param as any;
+    const flat = flattenParams(getEndpoint().params || {});
+    for (const entry of flat) {
+      const key = entry.key;
+      const p = entry.param as any;
       if (p.type === "list" && p.metadata) {
-        for (const entry of metadataEntries.value) {
-          const metaDef = p.metadata[entry.key];
-          if (metaDef?.regex && entry.value) {
-            if (!new RegExp(metaDef.regex).test(String(entry.value))) {
-              const examplePart = metaDef.example
-                ? ` Example: ${metaDef.example}`
-                : "";
+        for (const metaEntry of metadataEntries.value) {
+          const metaDef = p.metadata[metaEntry.key];
+          if (metaDef?.regex && metaEntry.value) {
+            if (!new RegExp(metaDef.regex).test(String(metaEntry.value))) {
+              const examplePart = metaDef.example ? ` Example: ${metaDef.example}` : "";
               const desc = metaDef.errordesc ? ` ${metaDef.errordesc}` : "";
-              errors.value = `Field ${metaDef.name || entry.key} does not match required format.${examplePart}${desc}`;
+              errors.value = `Field ${metaDef.name || metaEntry.key} does not match required format.${examplePart}${desc}`;
               return false;
             }
           }
@@ -163,39 +188,34 @@ export function useRequestForm(endpoint: any) {
       };
       body = fillTemplate(currentEndpoint.body);
     } else if (currentEndpoint.params) {
-      Object.entries(currentEndpoint.params).forEach(
-        ([key, param]: [string, any]) => {
-          if (param.type === "list" && param.metadata) {
-            if (metadataEntries.value.length > 0) {
-              const meta: any = {};
-              metadataEntries.value.forEach((e) => {
-                if (e.value !== "") {
-                  meta[e.key] = e.value;
-                }
-              });
-              if (Object.keys(meta).length > 0) body.metadata = meta;
-            }
-          } else {
-            const fieldName = param.value || key;
-            let val = formValues.value[fieldName];
-            if (param.type === "int" || param === "int") {
-              val = parseInt(val, 10);
-            }
-
-            if (key.includes(".")) {
-              const parts = key.split(".");
-              let current = body;
-              for (let i = 0; i < parts.length - 1; i++) {
-                if (!current[parts[i]]) current[parts[i]] = {};
-                current = current[parts[i]];
+      const flat = flattenParams(currentEndpoint.params || {});
+      flat.forEach(({ key, param }: { key: string; param: any }) => {
+        if (param.type === "list" && param.metadata) {
+          if (metadataEntries.value.length > 0) {
+            const meta: any = {};
+            metadataEntries.value.forEach((e) => {
+              if (e.value !== "") {
+                meta[e.key] = e.value;
               }
-              current[parts[parts.length - 1]] = val;
-            } else {
-              body[key] = val;
-            }
+            });
+            if (Object.keys(meta).length > 0) body.metadata = meta;
           }
-        },
-      );
+        } else {
+          const fieldName = param.value || key;
+          let val = formValues.value[fieldName];
+          if (param.type === "int" || param === "int") {
+            val = parseInt(val, 10);
+          }
+
+          const parts = key.split(".");
+          let current = body;
+          for (let i = 0; i < parts.length - 1; i++) {
+            if (!current[parts[i]]) current[parts[i]] = {};
+            current = current[parts[i]];
+          }
+          current[parts[parts.length - 1]] = val;
+        }
+      });
     }
     return body;
   };
@@ -362,8 +382,8 @@ export function useRequestForm(endpoint: any) {
   };
 
   const hasMetadataParam = computed(() => {
-    return Object.values(endpoint.params || {}).some(
-      (p: any) => p.type === "list" && p.metadata,
+    return flattenParams(endpoint.params || {}).some(
+      (e: any) => e.param?.type === "list" && e.param?.metadata,
     );
   });
 

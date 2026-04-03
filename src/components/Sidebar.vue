@@ -18,6 +18,7 @@ const {
   hasIdentity,
   onFileChange,
   triggerUpload,
+  removeIdentity,
 } = useSidebar();
 void fileInput;
 
@@ -39,13 +40,6 @@ const filteredEndpoints = computed(() => {
         Endpoints
       </div>
 
-      <p
-        v-if="expiryDisplay"
-        id="token-expire-mobile"
-        class="font-poppins mb-2 text-center text-xs text-gray-400 lg:hidden"
-      >
-        Expires:<br />{{ expiryDisplay }}
-      </p>
       <p
         v-if="expiryDisplay"
         id="token-expire"
@@ -71,6 +65,16 @@ const filteredEndpoints = computed(() => {
           class="hidden"
           @change="onFileChange"
         />
+
+        <button
+          v-if="hasIdentity"
+          @click="removeIdentity"
+          type="button"
+          class="ml-1 p-1 rounded-[3px] text-white text-sm cursor-pointer"
+          title="Remove identity token"
+        >
+          <i class="fa fa-close"></i>
+        </button>
       </div>
 
       <div class="w-full">
@@ -126,13 +130,20 @@ const filteredEndpoints = computed(() => {
           :key="ep.endpoint"
           @click="emit('select-endpoint', ep)"
           :class="[
-            'sidebar-link rounded-[9px] text-left w-[90%] transition-colors cursor-pointer px-3 py-2 flex flex-col justify-between border border-transparent',
+            'sidebar-link rounded-[9px] text-left w-[90%] transition-colors cursor-pointer px-3 py-2 flex items-start gap-1 flex-col justify-between',
             props.selectedEndpoint?.endpoint === ep.endpoint
               ? 'sb-selected'
               : '',
           ]"
         >
-          <span class="font-semibold font-poppins">{{ ep.name }}</span>
+          <span
+            class="flex font-semibold justify-between font-poppins items-center gap-1"
+            >{{ ep.name }}</span
+          >
+          <span
+            class="ep-desc text-xs font-poppins transition-colors text-white"
+            >{{ ep.subdesc }}</span
+          >
         </div>
       </div>
     </div>
