@@ -30,7 +30,7 @@ watch(
   <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6 w-full">
     <div
       v-if="selectedEndpoint"
-      class="lg:hidden sticky top-0 z-20 bg-[#09090b] py-2"
+      class="lg:hidden sticky top-0 z-20  py-2"
     >
       <div
         class="grid grid-cols-2 gap-2 rounded-xl border border-[#222] bg-[#101014] p-1"
@@ -69,7 +69,7 @@ watch(
     <div
       id="request-panel"
       :class="[
-        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] bg-[#09090b] h-[calc(100dvh-11rem)] lg:h-screen overflow-y-auto custom-scrollbar',
+        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] h-[calc(100dvh-11rem)] lg:h-screen overflow-y-auto custom-scrollbar',
         activeTab === 'request' ? 'block' : 'hidden lg:block',
       ]"
     >
