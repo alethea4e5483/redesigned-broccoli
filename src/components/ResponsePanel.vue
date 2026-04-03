@@ -37,7 +37,7 @@ const handleCopy = () => {
         v-if="hasValue"
         id="response-output"
         readonly
-        class="w-full h-full bg-transparent text-gray-200 outline-none resize-none"
+        class="w-full h-full bg-transparent text-gray-200 outline-none resize-none custom-scrollbar"
         :value="value"
       ></textarea>
       <span v-else class="text-left">Nothing returned yet.</span>

@@ -22,7 +22,7 @@ const {
   <div
     v-if="show"
     id="info-modal"
-    class="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black bg-opacity-60 p-3 sm:items-center sm:p-6"
+    class="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-[rgba(0,0,0,0.5)] p-3 sm:items-center sm:p-6"
     @click.self="emit('close')"
   >
     <div
@@ -82,7 +82,7 @@ const {
             <a
               target="_blank"
               href="https://github.com/HerrErde/SubwaySurfers-Api"
-              class="text-blue-400 hover:underline cursor-pointer"
+              class="text-blue-400 font-bold cursor-pointer"
               >github.com/HerrErde/SubwaySurfers-Api</a
             >.
           </p>
@@ -90,23 +90,24 @@ const {
 
         <div class="text-sm sm:text-base">
           <ul class="my-3 flex flex-col gap-2 font-medium">
-            <li class="bg-[#222] border-white/10 rounded-xl border-2 p-3">
-              This page runs entirely in your browser.<br />
+            <li
+              class="bg-base-200 border-base-content/10 rounded-xl border-2 p-3"
+            >
+              This page runs mostly in your browser.<br />
               Your
               <code class="bg-gray-800 text-yellow-400 px-1 rounded"
                 >identityToken</code
               >
               is used to authenticate requests to the API and is
-              <strong>never shared</strong> with anyone else.<br />
-              A hosted
+              <strong>never shared</strong>.<br />
+              A
               <code class="bg-gray-800 text-orange-400 px-1 rounded"
                 >Cloudflare Worker</code
               >
-              is used as a CORS proxy to allow making requests to the API that
-              would otherwise be blocked by browser security policies.<br />
-              This is a simple CORS proxy that forwards your requests and
-              responses; it does
-              <strong>not log or store your data</strong>.<br />
+              acts as a CORS proxy, enabling requests that would normally be
+              blocked by browser security policies.<br />
+              The proxy simply forwards requests and responses and
+              <strong>does not log or store your data</strong>.<br />
               You can change the CORS proxy URL below if you prefer to use a
               different proxy service. (it has to work with POST requests)<br />
             </li>
@@ -179,7 +180,7 @@ const {
         </details>
 
         <div class="grow"></div>
-        <section class="w-full text-center text-sm text-gray-500">
+        <section class="w-full text-center text-sm">
           <a
             target="_blank"
             href="https://github.com/HerrErde/SubwaySurfers-Api-web"
