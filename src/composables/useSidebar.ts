@@ -5,8 +5,7 @@ export function useSidebar() {
   const store = useAppStore();
   const searchQuery = ref("");
   const fileInput = ref<HTMLInputElement | null>(null);
-  const jwtPattern =
-    /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
+  const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
 
   const notify = (status: "error" | "success", title: string, text: string) => {
     const NotifyCtor = (window as any).Notify;
@@ -91,7 +90,11 @@ export function useSidebar() {
     const ok = confirm("Remove stored identity token from this browser?");
     if (!ok) return;
     store.clearIdentity();
-    notify("success", "Identity removed", "Identity cleared from local storage");
+    notify(
+      "success",
+      "Identity removed",
+      "Identity cleared from local storage",
+    );
   };
 
   const expiryDisplay = computed(() => {

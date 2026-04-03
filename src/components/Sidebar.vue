@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { endpointsList } from "../endpoints";
 import { useSidebar } from "../composables/useSidebar";
+import { useAppStore } from "../stores/app";
 
 const props = defineProps<{
   selectedEndpoint: any;
@@ -20,6 +21,7 @@ const {
   triggerUpload,
   removeIdentity,
 } = useSidebar();
+const store = useAppStore();
 void fileInput;
 
 const filteredEndpoints = computed(() => {
@@ -43,6 +45,9 @@ const filteredEndpoints = computed(() => {
       <p
         v-if="expiryDisplay"
         id="token-expire"
+        :title="
+          store.identityExpiry ? new Date(store.identityExpiry).toString() : ''
+        "
         class="font-poppins mb-2 text-center text-xs text-gray-400 hidden lg:block"
       >
         Expires:<br />{{ expiryDisplay }}
@@ -77,6 +82,7 @@ const filteredEndpoints = computed(() => {
         </button>
       </div>
 
+      <div class="w-full border-t border-[#222] my-3"></div>
       <div class="w-full">
         <div class="px-4 mb-4 w-full lg:hidden">
           <input
