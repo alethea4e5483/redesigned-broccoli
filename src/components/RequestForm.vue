@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRequestForm } from "../composables/useRequestForm";
-import { Send, Plus, Minus } from "lucide-vue-next";
 
 const props = defineProps<{
   endpoint: any;
@@ -39,7 +38,7 @@ const handleFormSubmit = async () => {
   <div class="space-y-6">
     <div v-if="hasMetadataParam" class="space-y-2">
       <label class="block text-sm font-medium text-gray-300"
-        >Paste playerData JSON</label
+        >Paste userData JSON</label
       >
       <textarea
         v-model="playerDataJson"
@@ -78,7 +77,7 @@ const handleFormSubmit = async () => {
               type="button"
               class="p-2 rounded-md bg-[#1a1a1a] border border-[#333] hover:bg-[#252525] cursor-pointer"
             >
-              <Plus class="w-4 h-4" />
+              <i class="fa-solid fa-plus"></i>
             </button>
           </div>
 
@@ -89,22 +88,26 @@ const handleFormSubmit = async () => {
               class="p-3 rounded-md bg-[#121212] border border-[#333] space-y-2"
             >
               <div class="flex items-center gap-2">
-                <label class="flex-1 text-sm font-semibold truncate">{{
-                  entry.key
-                }}</label>
+                <label
+                  class="rounded-md bg-[#121212] text-white border border-[#333] px-2 py-1 text-left text-sm font-semibold truncate"
+                  style="width: 350px"
+                >
+                  {{ entry.key }}
+                </label>
                 <button
                   @click="removeMetadataEntry(entry.key)"
                   type="button"
                   class="p-1 rounded-md bg-[#1a1a1a] border border-[#333] hover:bg-red-900/20 hover:border-red-900 cursor-pointer"
                 >
-                  <Minus class="w-4 h-4" />
+                  <i class="fa-solid fa-minus"></i>
                 </button>
               </div>
 
               <select
                 v-if="getMetadataDef(entry.key).options"
                 v-model="entry.value"
-                class="w-full px-3 py-1.5 rounded-md bg-[#09090b] text-white border border-[#333]"
+                class="rounded-md bg-[#121212] text-white border border-[#333] px-2 py-1 text-left metadata-input-select"
+                style="width: 350px"
               >
                 <option
                   v-for="opt in getMetadataDef(entry.key).options"
@@ -121,7 +124,8 @@ const handleFormSubmit = async () => {
                   getMetadataDef(entry.key).type === 'int' ? 'number' : 'text'
                 "
                 :placeholder="getMetadataDef(entry.key).example || ''"
-                class="w-full px-3 py-1.5 rounded-md bg-[#09090b] text-white border border-[#333]"
+                class="rounded-md bg-[#121212] text-white border border-[#333] px-2 py-1 text-left metadata-input-select"
+                style="width: 350px"
               />
               <p
                 v-if="getMetadataDef(entry.key).desc"
@@ -154,10 +158,10 @@ const handleFormSubmit = async () => {
       <div class="pt-4">
         <button
           type="submit"
-          :disabled="isSubmitting"
-          class="w-full sm:w-auto bg-[#ffcc99] hover:bg-[#ee9e4f] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Send v-if="!isSubmitting" class="w-4 h-4" />
+        :disabled="isSubmitting"
+        class="w-full sm:w-auto bg-[#ffcc99] hover:bg-[#ee9e4f] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+      >
+          <i v-if="!isSubmitting" class="fas fa-paper-plane"></i>
           <div
             v-else
             class="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"

@@ -17,6 +17,26 @@ export function useRequestForm(endpoint: any) {
   const isSubmitting = ref(false);
   const playerDataJson = ref("");
   const metadataSelection = ref("");
+  const notify = (status: "error" | "success", title: string, text: string) => {
+    const NotifyCtor = (window as any).Notify;
+    if (typeof NotifyCtor === "function") {
+      new NotifyCtor({
+        status,
+        title,
+        text,
+        effect: "fade",
+        speed: 300,
+        showIcon: true,
+        showCloseButton: true,
+        autoclose: true,
+        autotimeout: 3000,
+        type: "filled",
+        position: "right top",
+      });
+    } else {
+      alert(text);
+    }
+  };
 
   const initializeForm = () => {
     formValues.value = {};
@@ -40,7 +60,7 @@ export function useRequestForm(endpoint: any) {
 
   const addMetadataEntry = (key: string) => {
     if (metadataEntries.value.length >= 20) {
-      alert("Max 20 metadata entries");
+      notify("error", "Metadata Limit", "The maximal limit is 20 fields");
       return;
     }
     if (!metadataEntries.value.find((e) => e.key === key)) {
@@ -78,7 +98,11 @@ export function useRequestForm(endpoint: any) {
           const metaDef = p.metadata[entry.key];
           if (metaDef?.regex && entry.value) {
             if (!new RegExp(metaDef.regex).test(String(entry.value))) {
-              errors.value = `Field ${metaDef.name || entry.key} does not match required format.`;
+              const examplePart = metaDef.example
+                ? ` Example: ${metaDef.example}`
+                : "";
+              const desc = metaDef.errordesc ? ` ${metaDef.errordesc}` : "";
+              errors.value = `Field ${metaDef.name || entry.key} does not match required format.${examplePart}${desc}`;
               return false;
             }
           }
@@ -165,6 +189,13 @@ export function useRequestForm(endpoint: any) {
     errors.value = null;
     if (!store.identityToken) {
       errors.value = "Upload JSON first!";
+      notify("error", "Token missing", "You need to upload a valid identity file first");
+      return;
+    }
+
+    if (store.isTokenExpired) {
+      errors.value = "Token has expired";
+      notify("error", "Token expired", "Upload a fresh identity file");
       return;
     }
 
@@ -247,28 +278,28 @@ export function useRequestForm(endpoint: any) {
       const input = playerDataJson.value.trim();
       if (!input) return;
       const parsed = JSON.parse(input);
-      const playerData = parsed.player;
-      if (!playerData) {
-        alert("JSON must contain { player: {...} }");
+      const userData = parsed.userData;
+      if (!userData) {
+        notify("error", "Invalid JSON", "JSON must contain { userData: {...} }");
         return;
       }
 
-      if (playerData.name) formValues.value["name"] = playerData.name;
-      if (playerData.level !== undefined)
-        formValues.value["level"] = playerData.level;
-      if (playerData.highscore !== undefined)
-        formValues.value["highscore"] = playerData.highscore;
+      if (userData.name) formValues.value["name"] = userData.name;
+      if (userData.level !== undefined)
+        formValues.value["level"] = userData.level;
+      if (userData.highscore !== undefined)
+        formValues.value["highscore"] = userData.highscore;
 
-      if (Array.isArray(playerData.metadataMap)) {
+      if (Array.isArray(userData.metadataMap)) {
         metadataEntries.value = [];
-        playerData.metadataMap
+        userData.metadataMap
           .slice(0, 20)
           .forEach(([key, value]: [string, any]) => {
             metadataEntries.value.push({ key, value });
           });
       }
     } catch (err: any) {
-      alert("Invalid JSON: " + err.message);
+      notify("error", "Invalid JSON", err.message);
     }
   };
 

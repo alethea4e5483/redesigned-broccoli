@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watch } from "vue";
 import RequestForm from "./RequestForm.vue";
 import ResponsePanel from "./ResponsePanel.vue";
 import { useMainPanel } from "../composables/useMainPanel";
@@ -7,12 +8,26 @@ const props = defineProps<{
   selectedEndpoint: any;
 }>();
 
-const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, setTab } = useMainPanel();
+const {
+  activeTab,
+  responseValue,
+  isResponseReady,
+  onResponse,
+  clearResponse,
+  setTab,
+} = useMainPanel();
+
+watch(
+  () => props.selectedEndpoint,
+  () => {
+    clearResponse();
+    setTab("request");
+  },
+);
 </script>
 
 <template>
-  <div class="w-full flex flex-col lg:flex-row gap-4 lg:gap-6">
-    <!-- Mobile Tabs -->
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6 w-full">
     <div
       v-if="selectedEndpoint"
       class="lg:hidden sticky top-0 z-20 bg-[#09090b] py-2"
@@ -51,15 +66,15 @@ const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, se
       </div>
     </div>
 
-    <!-- Request Panel -->
     <div
+      id="request-panel"
       :class="[
-        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] bg-[#09090b] h-[calc(100dvh-11rem)] lg:h-screen overflow-y-auto custom-scrollbar lg:flex-[1.2]',
+        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] bg-[#09090b] h-[calc(100dvh-11rem)] lg:h-screen overflow-y-auto custom-scrollbar',
         activeTab === 'request' ? 'block' : 'hidden lg:block',
       ]"
     >
       <div v-if="selectedEndpoint">
-        <h2 class="text-[#ffcc99] text-2xl font-semibold mb-2">
+        <h2 class="text-[#ffcc99] font-poppins text-2xl font-semibold mb-2">
           {{ selectedEndpoint.name }}
         </h2>
         <p class="text-gray-400 mb-4">
@@ -86,10 +101,10 @@ const { activeTab, responseValue, isResponseReady, onResponse, clearResponse, se
       </div>
     </div>
 
-    <!-- Response Panel -->
     <div
+      id="response-panel"
       :class="[
-        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] flex-col h-[calc(100dvh-11rem)] lg:h-screen lg:flex-1',
+        'bg-[#0f0f11] p-6 rounded-xl border border-[#1a1a1a] flex flex-col h-[calc(100dvh-11rem)] lg:h-auto',
         activeTab === 'response' ? 'flex' : 'hidden lg:flex',
       ]"
     >

@@ -7,10 +7,9 @@ export function useMainPanel() {
 
   const onResponse = (val: string) => {
     responseValue.value = val;
-    isResponseReady.value = true;
     const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-    if (!isDesktop) {
-      activeTab.value = "response";
+    if (!isDesktop && activeTab.value === "request") {
+      isResponseReady.value = true;
     }
   };
 

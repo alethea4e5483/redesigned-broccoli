@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { X, ChevronDown } from "lucide-vue-next";
 import { useInfoModal } from "../composables/useInfoModal";
 
 defineProps<{
@@ -16,6 +15,7 @@ const { showSettings, corsProxyInput, limitsDisabled, saveCorsProxy, toggleLimit
 <template>
   <div
     v-if="show"
+    id="info-modal"
     class="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black bg-opacity-60 p-3 sm:items-center sm:p-6"
     @click.self="emit('close')"
   >
@@ -25,9 +25,10 @@ const { showSettings, corsProxyInput, limitsDisabled, saveCorsProxy, toggleLimit
       <button
         @click="emit('close')"
         type="button"
+        id="info-modal-close"
         class="rounded-full p-2 inline-flex items-center justify-center text-gray-400 bg-transparent hover:text-white hover:bg-gray-700 transition-colors duration-200 absolute right-2 top-2 text-xl cursor-pointer"
       >
-        <X class="h-6 w-6" />
+        <i class="fa-solid fa-xmark"></i>
       </button>
 
       <div class="flex h-full flex-col gap-5">
@@ -115,12 +116,12 @@ const { showSettings, corsProxyInput, limitsDisabled, saveCorsProxy, toggleLimit
             class="cursor-pointer select-none font-semibold text-lg text-white mb-2 list-none flex justify-between items-center"
           >
             Settings
-            <ChevronDown
+            <i
               :class="[
-                'w-5 h-5 text-gray-400 transition-transform duration-300',
+                'fa-solid fa-chevron-down text-gray-400 transition-transform duration-300',
                 showSettings ? 'rotate-180' : '',
               ]"
-            />
+            ></i>
           </summary>
 
           <div class="space-y-6 mt-4">
@@ -179,7 +180,7 @@ const { showSettings, corsProxyInput, limitsDisabled, saveCorsProxy, toggleLimit
             class="hover:text-white cursor-pointer"
             >Source</a
           >
-          ·
+          &middot;
           <a
             target="_blank"
             href="https://github.com/HerrErde/SubwaySurfers-Api"

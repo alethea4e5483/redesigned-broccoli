@@ -546,8 +546,8 @@ export const endpointsList: Endpoint[] = [
     name: "RemoveFriend",
     endpoint: "/rpc/friends.ext.v1.PrivateService/RemoveFriend",
     params: {
-      userId: {
-        value: "userId",
+      inviteId: {
+        value: "inviteId",
         regex: "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
         type: "string",
         required: true,
