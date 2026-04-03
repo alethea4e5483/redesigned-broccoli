@@ -76,7 +76,7 @@ const {
       <button
         @click="openInfo"
         title="Info"
-        class="btn btn-sm btn-circle bg-[#222] text-white hover:bg-[#444]"
+        class="btn btn-sm btn-circle bg-[#222] text-white hover:bg-[#444] cursor-pointer"
         style="
           width: 44px;
           height: 44px;

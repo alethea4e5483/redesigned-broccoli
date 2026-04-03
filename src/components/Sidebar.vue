@@ -11,8 +11,14 @@ const emit = defineEmits<{
   (e: "select-endpoint", endpoint: any): void;
 }>();
 
-const { searchQuery, fileInput, expiryDisplay, hasIdentity, onFileChange, triggerUpload } =
-  useSidebar();
+const {
+  searchQuery,
+  fileInput,
+  expiryDisplay,
+  hasIdentity,
+  onFileChange,
+  triggerUpload,
+} = useSidebar();
 void fileInput;
 
 const filteredEndpoints = computed(() => {
@@ -28,7 +34,7 @@ const filteredEndpoints = computed(() => {
 
 <template>
   <div class="flex flex-col items-center w-full p-4">
-    <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99] w-full">
+    <div class="text-left font-poppins text-lg mb-2 text-[#ffcc99]">
       Endpoints
     </div>
 
@@ -53,16 +59,8 @@ const filteredEndpoints = computed(() => {
         type="button"
         class="cursor-pointer hover:bg-[#7760fe] hover:text-white duration-100 p-2 px-6 rounded-[7px] bg-white text-black font-semibold text-sm"
       >
-        <i
-          v-if="hasIdentity"
-          class="fa fa-file mr-2"
-          aria-hidden="true"
-        ></i>
-        <i
-          v-else
-          class="fa fa-upload mr-2"
-          aria-hidden="true"
-        ></i>
+        <i v-if="hasIdentity" class="fa fa-file mr-2" aria-hidden="true"></i>
+        <i v-else class="fa fa-upload mr-2" aria-hidden="true"></i>
         {{ hasIdentity ? "identity" : "Upload Identity" }}
       </button>
       <input
