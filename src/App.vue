@@ -32,16 +32,6 @@ const {
     </div>
 
     <div
-      id="overlay"
-      :class="[
-        'fixed inset-0 bg-black bg-opacity-40 z-40 lg:hidden',
-        showMobileSidebar ? '' : 'hidden',
-      ]"
-      style="touch-action: pan-y"
-      @click="toggleMobileSidebar"
-    ></div>
-
-    <div
       id="mobileSidebar"
       :class="[
         'fixed top-0 left-0 h-full w-64 bg-[#09090b] z-50 transform transition-transform duration-200 ease-in-out lg:hidden flex flex-col shadow-lg overflow-y-auto',
@@ -55,7 +45,7 @@ const {
     </div>
 
     <div
-      class="sidebar hidden lg:flex w-[16.7vw] bg-[#09090b] h-screen flex-col items-center overflow-y-auto custom-scrollbar"
+      class="sidebar hidden lg:flex w-[16.7vw] bg-[#09090b] h-screen flex-col items-center overflow-hidden"
     >
       <Sidebar
         @select-endpoint="selectEndpoint"
